@@ -22,3 +22,4 @@ def assert_monthly_index(df):
 def assert_argument_is_int(arg, name):
     if not isinstance(arg, int):
         raise TypeError("{} argument must be an integer".format(name))
+        

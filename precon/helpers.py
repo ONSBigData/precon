@@ -2,7 +2,7 @@
 
 import pandas as pd
 
-from error_handling import assert_argument_is_int
+from precon._error_handling import assert_argument_is_int
 
 
 def reindex_and_fill(df, new_idx, first='ffill'):
@@ -59,4 +59,12 @@ def map_headings(df, labels, map_from, map_to):
     """Quick rename of the columns of given DataFrame, using the labels
     DataFrame."""
     return df.rename(columns=dict(zip(labels[map_from], labels[map_to])))
+
+
+def _selector(slicer, *args):
+    """Selects the given args with the given slice and returns a tuple."""
+    sliced_args = []
+    for arg in args:
+        sliced_args.append(arg.loc[slicer])
+    return tuple(sliced_args)
 

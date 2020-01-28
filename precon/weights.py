@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import pandas as pd
-from helpers import reindex_and_fill
+from precon.helpers import reindex_and_fill
 
 def get_weight_shares(weights):
     """If not weight shares already, calculates weight shares."""
