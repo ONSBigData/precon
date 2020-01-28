@@ -42,4 +42,4 @@ output/*/index.html
 docs/_build
 
 # Spyder
-.spyproject*
+*.spyproject/
