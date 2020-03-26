@@ -44,8 +44,10 @@ def chain(indices, double_link=False, base_months=None):
     base = base.shift().bfill()    # Fills first month
     
     growth = indices / base
+    chained_indices = growth.cumprod() * 100
     
-    return growth.cumprod() * 100
+    return chained_indices.fillna(0)    # Account for zero division
+
 
 
 def unchain(indices, double_link=False, base_months=None):
@@ -84,7 +86,8 @@ def unchain(indices, double_link=False, base_months=None):
     base = pd.DataFrame().reindex_like(indices)
     mask = base.index.month.isin(base_months)
     base.loc[mask] = indices[mask]
-    
     base = base.shift().ffill().bfill()
     
-    return indices/base * 100
+    unchained_indices = indices/base * 100
+    
+    return unchained_indices.fillna(0)  #   Account for zero division

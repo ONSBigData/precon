@@ -1,5 +1,6 @@
-# -*- coding: utf-8 -*-
-import pandas as pd
+"""
+Common aggregation functions.    
+"""
 
 from precon.weights import get_weight_shares, reindex_weights_to_indices
 
@@ -57,3 +58,35 @@ def substitute_indices(indices, subs):
         subbed_indices[key] = sub
     
     return subbed_indices
+
+
+def sum_up_hierarchy(df, labels, tree):
+    """Expand to the full structure then aggregate sum up hierarchy."""
+    df_expanded = expand_full_structure(df, labels)
+    return tree.aggregate_sum(df_expanded)
+
+
+def expand_full_structure(df, headers):
+    """
+    Reindexes the columns of the given DataFrame to the full
+    classification structure. Resulting NaNs filled with zeros.
+    
+    Parameters
+    ----------
+    df : DataFrame
+        The leaf values, either weights or indices.
+    headers : list or Series
+        The list of column labels representing the full class structure
+        to reindex by.
+        
+    Returns
+    -------
+    DataFrame
+        The indices or weights reindexed to the full class structure
+        given by the headers parameter.
+    """
+    # Check existing DataFrame columns are in headers.
+    if not all(df.columns.isin(headers)):
+        raise Exception("Not all columns of given DataFrame are in headers.")
+        
+    return df.reindex(headers, axis=1).fillna(0)

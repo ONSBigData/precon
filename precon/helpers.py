@@ -58,7 +58,14 @@ def reduce_cols(df, newcol, cols, reduce_func, drop=False, swap=None):
 def map_headings(df, labels, map_from, map_to):
     """Quick rename of the columns of given DataFrame, using the labels
     DataFrame."""
-    return df.rename(columns=dict(zip(labels[map_from], labels[map_to])))
+    mapper = dict(zip(labels[map_from], labels[map_to]))
+    if isinstance(df, pd.DataFrame):
+        return df.rename(columns=mapper)
+    elif isinstance(df, pd.Series):
+        if df.name in mapper.keys():
+            return df.rename(mapper.get(df.name))
+        else:
+            return df
 
 
 def _selector(slicer, *args):
@@ -68,3 +75,7 @@ def _selector(slicer, *args):
         sliced_args.append(arg.loc[slicer])
     return tuple(sliced_args)
 
+
+def _get_end_year(start_year):
+    """Returns the string of the previous year given the start year."""
+    return str(int(start_year)-1)

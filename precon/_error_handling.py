@@ -1,4 +1,6 @@
-# -*- coding: utf-8 -*-
+"""
+Reusable exceptions for the precon package.
+"""
 
 import pandas as pd
 
