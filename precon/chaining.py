@@ -91,3 +91,4 @@ def unchain(indices, double_link=False, base_months=None):
     unchained_indices = indices/base * 100
     
     return unchained_indices.fillna(0)  #   Account for zero division
+
