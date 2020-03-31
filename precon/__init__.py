@@ -1,11 +1,15 @@
 """ """
 
-from .chaining import chain, unchain
-from .aggregation import aggregate 
-from .contributions import contributions, contributions_with_double_update
-from .re_reference import set_ref_period
-
+from .chaining import *
+from .aggregation import * 
+from .contributions import *
+from .re_reference import *
+from .adjustments import *
+from .get_stats import *
+from .helpers import *
+from .prorate import *
+from .weights import *
 
 __author__ = 'Mitchell Edmunds'
 __email__ = 'mitchell.edmunds@ext.ons.gov.uk'
-__version__ = '0.1.0'
+__version__ = '0.2.0'

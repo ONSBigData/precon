@@ -23,12 +23,12 @@ history = open('HISTORY.rst').read().replace('.. :changelog:', '')
 
 setup(
     name='precon',
-    version='0.1.0',
+    version='0.2.0',
     description='A set of functions to calculate Prices Economics statistics.',
     long_description=readme + '\n\n' + doclink + '\n\n' + history,
     author='Mitchell Edmunds',
     author_email='mitchell.edmunds@ext.ons.gov.uk',
-    url='https://github.com/edmundsm/precon',
+    url='http://np2rvlapxx507/prices_economics/prices_economics',
     packages=[
         'precon',
     ],

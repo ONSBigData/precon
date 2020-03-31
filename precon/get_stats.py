@@ -2,6 +2,7 @@
 
 from precon.chaining import chain
 from precon.re_reference import set_ref_period
+from .contributions import contributions_with_double_update
 
 
 def get_index_and_growth_stats(index, ref_period, double_link=True, prefix=''):
