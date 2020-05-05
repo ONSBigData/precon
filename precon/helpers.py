@@ -66,6 +66,7 @@ def map_headings(df, labels, map_from, map_to):
             return df
 
 
+
 def _selector(slicer, *args):
     """Selects the given args with the given slice and returns a tuple."""
     sliced_args = []
@@ -77,3 +78,4 @@ def _selector(slicer, *args):
 def _get_end_year(start_year):
     """Returns the string of the previous year given the start year."""
     return str(int(start_year)-1)
+
