@@ -32,10 +32,7 @@ def reduce_cols(df, newcol, cols, reduce_func, drop=False, swap=None):
     columns. Options to choose the reduce function (such as mean or
     sum), drop the given columns, and swap the new column inplace
     with one of the reduced columns.
-    """
-    if newcol in df.columns:
-        raise Exception("the name for newcol cannot be an existing column label.")
-    
+    """   
     if swap:
         assert_argument_is_int(swap, 'swap')
         try:
@@ -50,7 +47,8 @@ def reduce_cols(df, newcol, cols, reduce_func, drop=False, swap=None):
         df = swap_columns(df, newcol, cols[swap])
     
     if drop:
-        df = df.drop(columns=cols)
+        cols_to_drop = [c for c in cols if c != newcol] 
+        df = df.drop(columns=cols_to_drop)
 
     return df
 

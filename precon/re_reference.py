@@ -59,9 +59,14 @@ def in_year_indices_to_full_index(in_year_indices):
     full_index = pd.concat(in_year_indices).fillna(0).droplevel(0)
     
     # Take out any Jan=100 that are not the first in the full index
-    condition = ((full_index.index.month == 1)
-                 & (full_index.index.year != full_index.index[0].year)
-                 & (full_index == 100).any(axis=1))
-    full_index = full_index[~condition]
+    jan = (full_index.index.month == 1)
+    not_first_year = (full_index.index.year != full_index.index[0].year)
     
-    return full_index
+    if isinstance(full_index, pd.core.series.Series):
+        equals_100 = full_index == 100
+    elif isinstance(full_index, pd.core.frame.DataFrame):
+        equals_100 = (full_index == 100).any(axis=1)
+    
+    duplicate_months = (jan & not_first_year & equals_100)
+    
+    return full_index[~duplicate_months]
