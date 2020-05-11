@@ -36,13 +36,42 @@ def jan_adjustment(indices, direction='forward'):
     return adjusted_indices
 
 
-#def adjust_weights(weights):
-#    # Errors > 0.5 means that adjustment is needed
-#    errs = abs((weights - weights.round()).sum(1))
-#    need_adjusting = errs > 0.5
-#    no_of_adjustments = errs[need_adjusting].round(1)
-#    
-#    adjustments = pd.DataFrame().reindex_like(weights[need_adjusting])
-#    for index, row in weights[need_adjusting].iterrows():
-#        for _ in range(1, abs(number_of_adjustments[index])):
-#    # NEEDS DEV WORK
+def round_and_adjust_weights(weights, dec):
+    """Rounds a set of weights while ensuring the rounded values sum to
+    the same total as the unrounded weights.
+    """
+    # Get the rounded weights and rounding factor
+    rounded_weights = weights.round(dec)
+    rounding_factor = 10**dec
+    
+    # Errors > 0.5 between rounded and unrounded means that adjustment
+    # is needed
+    errs = (weights - rounded_weights).sum(1)
+    need_adjusting = abs(errs) > (0.5 / rounding_factor)
+    no_of_adjustments = (errs[need_adjusting].round(dec) * rounding_factor)
+    no_of_adjustments = no_of_adjustments.astype(int)
+    
+    # Create a zeros DataFrame to fill with adjustments
+    adjustments = pd.DataFrame().reindex_like(weights).fillna(0)
+    
+    for index, row in weights[need_adjusting].iterrows():
+        
+        # Get number of adjustments for this row
+        adjust = no_of_adjustments.loc[index]
+        
+        # Get the difference of each value from its rounded value and
+        # rank depending whether adjusting down or up
+        if np.sign(adjust) == -1:
+            diff_ranked = (row - row.round(dec)).sort_values(ascending=True)
+        else:
+            diff_ranked = (row - row.round(dec)).sort_values(ascending=False)
+        
+        # For each adjusment to be made, set the appropriate value
+        # in the adjustments df        
+        for i in range(0, abs(adjust)):
+            adjustments.at[index, diff_ranked.index[i]] = (
+                (0.5 / rounding_factor) * np.sign(adjust)
+            )
+            
+    adjusted_weights = weights + adjustments
+    return adjusted_weights.round(dec)
