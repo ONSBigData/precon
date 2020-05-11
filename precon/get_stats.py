@@ -92,3 +92,4 @@ def get_reference_table_stats(
     )
     
     return pub_stats
+

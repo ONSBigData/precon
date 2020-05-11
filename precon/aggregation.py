@@ -1,3 +1,4 @@
+
 """
 Common aggregation functions.    
 """
@@ -5,6 +6,7 @@ import pandas as pd
 
 from precon.weights import get_weight_shares, reindex_weights_to_indices
 from precon.helpers import reduce_cols
+
 
 def aggregate(indices, weights):
     """
@@ -114,3 +116,4 @@ def create_special_aggregation(indices, weights, name, agg_cols):
     )
     
     return pub_subs, pub_weights
+

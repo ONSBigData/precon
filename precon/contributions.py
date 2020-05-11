@@ -1,6 +1,7 @@
 """ 
 Functions to calculate contributions to growth.
 """
+
 import pandas as pd
 
 from precon.helpers import _selector
