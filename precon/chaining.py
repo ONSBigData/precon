@@ -41,8 +41,7 @@ def chain(indices, double_link=False, base_periods=None):
     
     # If the initial Jan period is missing then set to 100
     # Handles indices with different time periods
-    if any(indices.iloc[0, :] != 100):
-        indices = indices.apply(set_first_jan)
+    indices = set_jans(indices)
     
     is_base_period = get_base_period_mask(indices, double_link, base_periods)
     # Set base periods to 100
@@ -57,6 +56,17 @@ def chain(indices, double_link=False, base_periods=None):
     
     return chained_indices.fillna(0)    # Account for zero division
 
+
+def set_jans(indices):
+    """ """
+    if isinstance(indices, pd.core.frame.DataFrame):
+        if any(indices.iloc[0, :] != 100):
+            indices = indices.apply(set_first_jan)
+    elif isinstance(indices, pd.core.series.Series):
+        if indices.iloc[0] != 100:
+            indices = set_first_jan(indices)
+            
+    return indices
 
 def unchain(indices, double_link=False, base_periods=None):
     """
@@ -157,20 +167,6 @@ def validate_monthly_base_periods(base_periods):
         raise ValueError("Given base periods for a monthly index must be between 1 and 12.")
 
 
-# def get_max_year_occurences(indices):
-#     return indices.index.year.to_series().groupby(level=0).count().max()
-
-
-# def check_series_quarterly(indices):
-#     """Returns True if the indices have an index with quarterly freq."""
-#     if (isinstance(indices.index.freq, pd.tseries.offsets.QuarterBegin)
-#             or isinstance(indices.index.freq, pd.tseries.offsets.QuarterEnd)
-#             or get_max_year_occurences(indices) == 4):
-#         return True
-#     else:
-#         return False
-
-
 def check_series_freq(indices, freq):
     """Returns True if the indices have an index with given freq."""
     try:
@@ -182,16 +178,6 @@ def check_series_freq(indices, freq):
             return True
         except:
             return False
-
-
-# def check_series_monthly(indices):
-#     """Returns True if the indices have an index with monthly freq."""
-#     if (isinstance(indices.index.freq, pd.tseries.offsets.MonthBegin)
-#             or isinstance(indices.index.freq, pd.tseries.offsets.MonthEnd)
-#             or get_max_year_occurences(indices) == 12):
-#         return True
-#     else:
-#         return False
 
 
 def set_first_jan(s):
@@ -211,4 +197,8 @@ def set_first_jan(s):
 if __name__ == "__main__":
     unchained = pd.read_csv(r"D:\ooh\output\all_stats\na_subidx_unchained.csv", index_col=0, parse_dates=True)
     chained = chain(unchained)
+    unchained_1 = unchained.iloc[:, 5]
+    unchained_2 = unchained.iloc[:, 3]
+    chain_1 = chain(unchained_1)
+    chain_2 = chain(unchained_2)
     
