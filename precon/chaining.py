@@ -57,17 +57,6 @@ def chain(indices, double_link=False, base_periods=None):
     return chained_indices.fillna(0)    # Account for zero division
 
 
-def set_jans(indices):
-    """ """
-    if isinstance(indices, pd.core.frame.DataFrame):
-        if any(indices.iloc[0, :] != 100):
-            indices = indices.apply(set_first_jan)
-    elif isinstance(indices, pd.core.series.Series):
-        if indices.iloc[0] != 100:
-            indices = set_first_jan(indices)
-            
-    return indices
-
 def unchain(indices, double_link=False, base_periods=None):
     """
     Unchain the indices using direct (fixed-base) chaining.
@@ -180,6 +169,19 @@ def check_series_freq(indices, freq):
             return False
 
 
+def set_jans(indices):
+    """Handles setting the first January for both Series and DataFrame."""
+    if isinstance(indices, pd.core.frame.DataFrame):
+        if any(indices.iloc[0, :] != 100):
+            indices = indices.apply(set_first_jan)
+    
+    elif isinstance(indices, pd.core.series.Series):
+        if indices.iloc[0] != 100:
+            indices = set_first_jan(indices)
+            
+    return indices
+
+
 def set_first_jan(s):
     """Sets the Jan of the 1st year with data of an index Series to 100."""
     s_out = s.copy()
@@ -192,13 +194,3 @@ def set_first_jan(s):
         s_out = s_out.sort_index()
         
     return s_out
-
-
-if __name__ == "__main__":
-    unchained = pd.read_csv(r"D:\ooh\output\all_stats\na_subidx_unchained.csv", index_col=0, parse_dates=True)
-    chained = chain(unchained)
-    unchained_1 = unchained.iloc[:, 5]
-    unchained_2 = unchained.iloc[:, 3]
-    chain_1 = chain(unchained_1)
-    chain_2 = chain(unchained_2)
-    
