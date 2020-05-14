@@ -2,13 +2,23 @@
 precon
 =============================
 
-.. image:: https://badge.fury.io/py/precon.png
-    :target: http://badge.fury.io/py/precon
-
-.. image:: https://travis-ci.org/edmundsm/precon.png?branch=master
-    :target: https://travis-ci.org/edmundsm/precon
-
 A set of functions to calculate Prices Economics statistics.
+
+
+Installation
+------------
+
+.. code-block:: bash
+
+    pip install git+http://np2rvlapxx507/prices_economics/prices_economics.git
+
+
+Use
+---
+
+.. code-block:: python
+
+    import precon
 
 
 Features
