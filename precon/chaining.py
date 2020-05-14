@@ -5,6 +5,8 @@ Created on Mon Jan 27 17:49:18 2020
 @author: Mitchell Edmunds
 @title: Chaining functions
 """
+from datetime import datetime
+
 import pandas as pd
 
 def chain(indices, double_link=False, base_periods=None):
@@ -36,6 +38,11 @@ def chain(indices, double_link=False, base_periods=None):
     unchain: Unchain the indices using direct (fixed-base) chaining.
     """
     base = indices.copy()
+    
+    # If the initial Jan period is missing then set to 100
+    # Handles indices with different time periods
+    if any(indices.iloc[0, :] != 100):
+        indices = indices.apply(set_first_jan)
     
     is_base_period = get_base_period_mask(indices, double_link, base_periods)
     # Set base periods to 100
@@ -95,14 +102,13 @@ def unchain(indices, double_link=False, base_periods=None):
 
 def get_base_period_mask(indices, double_link, base_periods):
     """Returns a truthy array if the index of indices is a base_period.
-    
     Works for both quarterly and monthly indices with validation.
     """
     # Ensures base_periods is list of int if given.
     if base_periods:
         base_periods = handle_base_indices_arg(base_periods)
      
-    if check_series_monthly(indices):
+    if check_series_freq(indices, 'M'):
         # Set defaults if not given: either single or double link.
         if not base_periods:
             base_periods = set_monthly_base_periods_defaults(double_link)
@@ -111,7 +117,7 @@ def get_base_period_mask(indices, double_link, base_periods):
             
         return indices.index.month.isin(base_periods)
     
-    elif check_series_quarterly(indices):
+    elif check_series_freq(indices, 'Q'):
         validate_quarterly_base_periods(base_periods)
         
         return  indices.index.quarter.isin(base_periods)
@@ -151,27 +157,58 @@ def validate_monthly_base_periods(base_periods):
         raise ValueError("Given base periods for a monthly index must be between 1 and 12.")
 
 
-def get_max_year_occurences(indices):
-    return indices.index.year.to_series().groupby(level=0).count().max()
+# def get_max_year_occurences(indices):
+#     return indices.index.year.to_series().groupby(level=0).count().max()
 
 
-def check_series_quarterly(indices):
-    """Returns True if the indices have an index with quarterly freq."""
-    if (isinstance(indices.index.freq, pd.tseries.offsets.QuarterBegin)
-            or isinstance(indices.index.freq, pd.tseries.offsets.QuarterEnd)
-            or get_max_year_occurences(indices) == 4):
+# def check_series_quarterly(indices):
+#     """Returns True if the indices have an index with quarterly freq."""
+#     if (isinstance(indices.index.freq, pd.tseries.offsets.QuarterBegin)
+#             or isinstance(indices.index.freq, pd.tseries.offsets.QuarterEnd)
+#             or get_max_year_occurences(indices) == 4):
+#         return True
+#     else:
+#         return False
+
+
+def check_series_freq(indices, freq):
+    """Returns True if the indices have an index with given freq."""
+    try:
+        indices.index.freq = freq
         return True
-    else:
-        return False
+    except:
+        try:
+            indices.index.freq = freq + 'S'
+            return True
+        except:
+            return False
 
 
-def check_series_monthly(indices):
-    """Returns True if the indices have an index with monthly freq."""
-    if (isinstance(indices.index.freq, pd.tseries.offsets.MonthBegin)
-            or isinstance(indices.index.freq, pd.tseries.offsets.MonthEnd)
-            or get_max_year_occurences(indices) == 12):
-        return True
-    else:
-        return False
+# def check_series_monthly(indices):
+#     """Returns True if the indices have an index with monthly freq."""
+#     if (isinstance(indices.index.freq, pd.tseries.offsets.MonthBegin)
+#             or isinstance(indices.index.freq, pd.tseries.offsets.MonthEnd)
+#             or get_max_year_occurences(indices) == 12):
+#         return True
+#     else:
+#         return False
+
+
+def set_first_jan(s):
+    """Sets the Jan of the 1st year with data of an index Series to 100."""
+    s_out = s.copy()
     
+    if not all(s_out == 0):
+        
+        s_dropped = s.dropna()
+        first_year = s_dropped.index.year[0]
+        s_out.loc[datetime(first_year, 1, 1)] = 100
+        s_out = s_out.sort_index()
+        
+    return s_out
 
+
+if __name__ == "__main__":
+    unchained = pd.read_csv(r"D:\ooh\output\all_stats\na_subidx_unchained.csv", index_col=0, parse_dates=True)
+    chained = chain(unchained)
+    
