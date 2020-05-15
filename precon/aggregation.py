@@ -5,18 +5,22 @@ Common aggregation functions.
 import pandas as pd
 
 from precon.weights import get_weight_shares, reindex_weights_to_indices
-from precon.helpers import reduce_cols
+from precon.helpers import reduce_cols, axis_flip
 
 
-def aggregate(indices, weights):
+def aggregate(indices, weights, axis=1):
     """
     Takes a set of unchained indices and corresponding weights with matching
     time series index, and produces the weighted aggregate unchained index.
     """
-    weight_shares = get_weight_shares(weights)
-    weight_shares = reindex_weights_to_indices(weight_shares, indices)
+    weight_shares = get_weight_shares(weights, axis)
+    weight_shares = reindex_weights_to_indices(
+        weight_shares,
+        indices,
+        axis_flip(axis)
+    )
     
-    return indices.mul(weight_shares).sum(axis=1)
+    return indices.mul(weight_shares).sum(axis=axis)
 
 
 def reaggregate_index(indices, weights, subs):

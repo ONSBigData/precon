@@ -1,21 +1,31 @@
 # -*- coding: utf-8 -*-
 
 import pandas as pd
-from precon.helpers import reindex_and_fill
+from precon.helpers import reindex_and_fill, axis_flip
 
-def get_weight_shares(weights):
+def get_weight_shares(weights, axis=1):
     """If not weight shares already, calculates weight shares."""
-    if not weights.sum(axis=1).round().eq(1).all():
-        # It is already weight shares so return input
-        return weights.div(weights.sum(axis=1), axis=0)
-    else:
+    if isinstance(weights, pd.core.frame.Series):
+        weights = weights.to_frame()
+        
+    if not weights.sum(axis).round().eq(1).all():
+        return weights.div(weights.sum(axis), axis=axis_flip(axis))
+    
+    else:   # It is already weight shares so return input
         return weights
 
 
-def reindex_weights_to_indices(weights, indices):
+def reindex_weights_to_indices(weights, indices, axis=0):
     """If not already indexed like indices, reindexes weights."""
-    if not (weights.index).equals(indices.index):
-        return reindex_and_fill(weights, indices.index, 'ffill')
+    if isinstance(weights, pd.core.frame.Series):
+        weights = weights.to_frame()
+        
+    if not weights.axes[axis].isin(indices.axes[axis]).all():
+        raise Exception("Weights index values are not present in indices "
+                        "index so can't be reindexed.")
+        
+    if not (weights.axes[axis]).equals(indices.axes[axis]):
+        return reindex_and_fill(weights, indices, 'ffill', axis)
     else:
         return weights
 

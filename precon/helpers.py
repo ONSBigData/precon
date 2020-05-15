@@ -5,16 +5,14 @@ import pandas as pd
 from precon._error_handling import assert_argument_is_int
 
 
-def reindex_and_fill(df, new_idx, first='ffill'):
-    """Reindex the  DataFrame or Series by the given index, and fill, by 
-    first filling forward and then backwards.
-    """
-    reindexed = df.reindex(index=new_idx)   
+def reindex_and_fill(df, like_df, first='ffill', axis=0):
+    """Reindex and fill the DataFrame or Series by given index and axis."""
+    reindexed = df.reindex(like_df.axes[axis], axis=axis)
     
     if first == 'ffill':
-        reindexed_and_filled = reindexed.ffill().bfill()
+        reindexed_and_filled = reindexed.ffill(axis).bfill(axis)
     elif first == 'bfill':
-        reindexed_and_filled = reindexed.bfill().ffill()
+        reindexed_and_filled = reindexed.bfill(axis).ffill(axis)
     
     return reindexed_and_filled
 
