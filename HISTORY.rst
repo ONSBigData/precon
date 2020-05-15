@@ -21,7 +21,6 @@ History
 * Added round_and_adjust_weights function in rounding.py.
 * Add set_jans function and improved time series validation in chaining to make functions more robust.
 
-
 0.2.0   (2020-03-31)
 ++++++++++++++++++++
 
