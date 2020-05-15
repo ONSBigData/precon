@@ -170,7 +170,9 @@ def check_series_freq(indices, freq):
 
 
 def set_first_period_to_100(indices):
-    """Handles setting the first January for both Series and DataFrame."""
+    """Handles setting the first first period for both Series
+    and DataFrame.
+    """
     if isinstance(indices, pd.core.frame.DataFrame):
         first_row = indices.iloc[0, :]
         
@@ -185,7 +187,7 @@ def set_first_period_to_100(indices):
 
 
 def set_first_period(s):
-    """Sets the Jan of the 1st year with data of an index Series to 100."""
+    """Sets the first period of the 1st year with data to 100."""
     s_out = s.copy()
     
     if not all(s_out == 0):
