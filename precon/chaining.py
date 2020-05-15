@@ -39,9 +39,9 @@ def chain(indices, double_link=False, base_periods=None):
     """
     base = indices.copy()
     
-    # If the initial Jan period is missing then set to 100
-    # Handles indices with different time periods
-    indices = set_first_period_to_100(indices)
+    # # If the initial Jan period is missing then set to 100
+    # # Handles indices with different time periods
+    # indices = set_first_period_to_100(indices)
     
     is_base_period = get_base_period_mask(indices, double_link, base_periods)
     # Set base periods to 100
@@ -169,32 +169,32 @@ def check_series_freq(indices, freq):
             return False
 
 
-def set_first_period_to_100(indices):
-    """Handles setting the first first period for both Series
-    and DataFrame.
-    """
-    if isinstance(indices, pd.core.frame.DataFrame):
-        first_row = indices.iloc[0, :]
+# def set_first_period_to_100(indices):
+#     """Handles setting the first first period for both Series
+#     and DataFrame.
+#     """
+#     if isinstance(indices, pd.core.frame.DataFrame):
+#         first_row = indices.iloc[0, :]
         
-        if any((first_row != 100) & (first_row != 0)):
-            indices = indices.apply(set_first_period)
+#         if any((first_row != 100) & (first_row != 0)):
+#             indices = indices.apply(set_first_period)
     
-    elif isinstance(indices, pd.core.series.Series):
-        if (indices.iloc[0] != 100) & (indices.iloc[0] != 100):
-            indices = set_first_period(indices)
+#     elif isinstance(indices, pd.core.series.Series):
+#         if (indices.iloc[0] != 100) & (indices.iloc[0] != 100):
+#             indices = set_first_period(indices)
             
-    return indices
+#     return indices
 
 
-def set_first_period(s):
-    """Sets the first period of the 1st year with data to 100."""
-    s_out = s.copy()
+# def set_first_period(s):
+#     """Sets the first period of the 1st year with data to 100."""
+#     s_out = s.copy()
     
-    if not all(s_out == 0):
+#     if not all(s_out == 0):
         
-        s_dropped = s.dropna()
-        first_year = str(s_dropped.index.year[0])
-        s_out.loc[first_year].iloc[0] = 100
-        s_out = s_out.sort_index()
+#         s_dropped = s.dropna()
+#         first_year = str(s_dropped.index.year[0])
+#         s_out.loc[first_year].iloc[0] = 100
+#         s_out = s_out.sort_index()
         
-    return s_out
+#     return s_out

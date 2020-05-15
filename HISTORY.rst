@@ -3,6 +3,11 @@
 History
 -------
 
+0.3.3   (2020-05-15)
+++++++++++++++++++++
+
+* Rolled back set_first_period in chaining as it introduced a bug.
+
 0.3.2   (2020-05-15)
 ++++++++++++++++++++
 
