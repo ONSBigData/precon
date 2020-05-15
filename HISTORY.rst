@@ -3,12 +3,17 @@
 History
 -------
 
+0.3.2   (2020-05-15)
+++++++++++++++++++++
+
+* Bug fix: included flip_axis function in helpers.
+
+
 0.3.1   (2020-05-15)
 ++++++++++++++++++++
 
 * Modified aggregation function to work with weight Series and different axes.
 * Changed set_jans in chaining to set_first_period_to_100 to work with quarterly series.
-
 
 0.3.0   (2020-05-14)
 ++++++++++++++++++++

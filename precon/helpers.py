@@ -64,6 +64,10 @@ def map_headings(df, labels, map_from, map_to):
             return df
 
 
+def axis_flip(axis):
+    """Returns the opposite axis value to the one passed."""
+    return axis ^ 1
+
 
 def _selector(slicer, *args):
     """Selects the given args with the given slice and returns a tuple."""
