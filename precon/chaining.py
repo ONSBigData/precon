@@ -41,7 +41,7 @@ def chain(indices, double_link=False, base_periods=None):
     
     # If the initial Jan period is missing then set to 100
     # Handles indices with different time periods
-    indices = set_jans(indices)
+    indices = set_first_period_to_100(indices)
     
     is_base_period = get_base_period_mask(indices, double_link, base_periods)
     # Set base periods to 100
@@ -169,20 +169,20 @@ def check_series_freq(indices, freq):
             return False
 
 
-def set_jans(indices):
+def set_first_period_to_100(indices):
     """Handles setting the first January for both Series and DataFrame."""
     if isinstance(indices, pd.core.frame.DataFrame):
         if any(indices.iloc[0, :] != 100):
-            indices = indices.apply(set_first_jan)
+            indices = indices.apply(set_first_period)
     
     elif isinstance(indices, pd.core.series.Series):
         if indices.iloc[0] != 100:
-            indices = set_first_jan(indices)
+            indices = set_first_period(indices)
             
     return indices
 
 
-def set_first_jan(s):
+def set_first_period(s):
     """Sets the Jan of the 1st year with data of an index Series to 100."""
     s_out = s.copy()
     
