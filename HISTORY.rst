@@ -3,6 +3,11 @@
 History
 -------
 
+0.3.4   (2020-05-22)
+++++++++++++++++++++
+
+* Introduced improvements to round_and_adjust_weights to work with Series and on any axis of a DataFrame with the axis option.
+
 0.3.3   (2020-05-15)
 ++++++++++++++++++++
 
