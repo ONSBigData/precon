@@ -73,7 +73,7 @@ def round_and_adjust_weights(weights, decimals, axis=0):
         
         elif (axis == 1) or (axis == 'columns'):
             for index, row in weights.iteritems():
-                adj.loc[:, index] = _get_series_adjustments(
+                adjustments.loc[:, index] = _get_series_adjustments(
                     row, decimals,
                 )
             
