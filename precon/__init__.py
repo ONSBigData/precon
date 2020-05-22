@@ -1,7 +1,7 @@
 """ """
 
 
-from .adjustments import *
+from .adjustments import jan_adjustment, round_and_adjust_weights
 from .aggregation import * 
 from .chaining import *
 from .contributions import *
@@ -14,4 +14,4 @@ from .weights import *
 
 __author__ = 'Mitchell Edmunds'
 __email__ = 'mitchell.edmunds@ext.ons.gov.uk'
-__version__ = '0.3.0'
+__version__ = '0.3.4'
