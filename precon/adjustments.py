@@ -1,14 +1,13 @@
-# -*- coding: utf-8 -*-
 """
-Created on Thu Mar 26 17:39:08 2020
+Functions for special rounding methods. Includes function to round
+and adjust weights to keep the sum of weights the same.
+"""
 
-@author: edmunm
-"""
 import pandas as pd
 
 def jan_adjustment(indices, direction='forward'):
     """Adjust the January values of the index."""
-    if (direction != 'forward') & (direction != 'back'):
+    if direction not in ['forward', 'back']:
         raise ValueError("'direction' must be either 'forward' or 'back'")
         
     jans = (indices.index.month == 1)
