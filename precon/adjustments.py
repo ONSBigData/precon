@@ -58,9 +58,7 @@ def round_and_adjust_weights(weights, decimals, axis=0):
     """    
     if isinstance(weights, pd.core.series.Series):
         
-        adjustments = _get_series_adjustments(
-            weights, decimals,
-        )
+        adjustments = _get_series_adjustments(weights, decimals)
         
     elif isinstance(weights, pd.core.frame.DataFrame):
         
@@ -75,7 +73,7 @@ def round_and_adjust_weights(weights, decimals, axis=0):
         
         elif (axis == 1) or (axis == 'columns'):
             for index, row in weights.iteritems():
-                adjustments.loc[:, index] = _get_series_adjustments(
+                adj.loc[:, index] = _get_series_adjustments(
                     row, decimals,
                 )
             
