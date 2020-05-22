@@ -55,15 +55,11 @@ def round_and_adjust_weights(weights, decimals, axis=0):
     -------
     DataFrame or Series
         The rounded and adjusted weights
-    """
-    # Get the rounding factor and adjustment
-    rounding_factor = 10**decimals
-    adjustment = 0.5 / rounding_factor
-    
+    """    
     if isinstance(weights, pd.core.series.Series):
         
         adjustments = _get_series_adjustments(
-            weights, dec, rounding_factor, adjustment,
+            weights, decimals,
         )
         
     elif isinstance(weights, pd.core.frame.DataFrame):
@@ -74,21 +70,23 @@ def round_and_adjust_weights(weights, decimals, axis=0):
         if (axis == 0) or (axis == 'index'):
             for index, row in weights.iterrows():
                 adjustments.loc[index, :] = _get_series_adjustments(
-                    row, dec, rounding_factor, adjustment,
+                    row, decimals,
                 )
         
         elif (axis == 1) or (axis == 'columns'):
             for index, row in weights.iteritems():
                 adjustments.loc[:, index] = _get_series_adjustments(
-                    row, dec, rounding_factor, adjustment,
+                    row, decimals,
                 )
             
     adjusted_weights = weights + adjustments
     return adjusted_weights.round(decimals)
 
 
-def _get_series_adjustments(weights, dec, factor, adjustment):
+def _get_series_adjustments(weights, dec):
     """Get the adjustments for the weight series."""
+    factor, adjustment = _get_rounding_factor_and_adjustment(dec)
+    
     # Errors > 0.5 between rounded and unrounded means that adjustment
     # is needed
     errs = (weights - weights.round(dec)).sum()
@@ -117,3 +115,11 @@ def _get_weights_to_adjust(weights, dec, no_of_adjustments):
     diff_ranked = (weights - weights.round(dec)).sort_values(ascending=asc)
 
     return diff_ranked.index[range(0, abs(no_of_adjustments))]
+
+
+def _get_rounding_factor_and_adjustment(decimals):
+    """Get the rounding factor and adjustment from decimals."""
+    rounding_factor = 10**decimals
+    adjustment = 0.5 / rounding_factor
+    
+    return (rounding_factor, adjustment)
