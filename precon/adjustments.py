@@ -36,16 +36,20 @@ def jan_adjustment(indices, direction='forward'):
     return adjusted_indices
 
 
-def round_and_adjust_weights(weights, decimals):
+def round_and_adjust_weights(weights, decimals, axis=0):
     """Rounds a set of weights ensuring the rounded values sum to
     the same total as the unrounded weights.
     
     Parameters
     ----------
     weights : DataFrame or Series
-        The weights to round and adjust
+        The weights to round and adjust.
     decimals : int
-        The decimal points to round to
+        The decimal points to round to.
+    axis : {0 or ‘index’, 1 or ‘columns’}, default 0
+        Axis along which the function is applied:
+            * 0 or ‘index’: apply function to each column.
+            * 1 or ‘columns’: apply function to each row.
         
     Returns
     -------
@@ -67,10 +71,17 @@ def round_and_adjust_weights(weights, decimals):
         # Create a zeros DataFrame to fill with adjustments
         adjustments = pd.DataFrame().reindex_like(weights).fillna(0)
         
-        for index, row in weights.iterrows():
-            adjustments.loc[index] = _get_series_adjustments(
-                row, decimals, rounding_factor, adjustment,
-            )   
+        if (axis == 0) or (axis == 'index'):
+            for index, row in weights.iterrows():
+                adjustments.loc[index, :] = _get_series_adjustments(
+                    row, dec, rounding_factor, adjustment,
+                )
+        
+        elif (axis == 1) or (axis == 'columns'):
+            for index, row in weights.iteritems():
+                adjustments.loc[:, index] = _get_series_adjustments(
+                    row, dec, rounding_factor, adjustment,
+                )
             
     adjusted_weights = weights + adjustments
     return adjusted_weights.round(decimals)
