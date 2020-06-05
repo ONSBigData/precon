@@ -3,6 +3,11 @@
 History
 -------
 
+0.4.0   (2020-06-05)
+++++++++++++++++++++
+
+* Introduced new function uprate and get_uprating_factors for price uprating.
+
 0.3.5   (2020-05-22)
 ++++++++++++++++++++
 
