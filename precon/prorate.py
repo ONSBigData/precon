@@ -1,11 +1,9 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Thu Mar 26 17:58:49 2020
+""" prorate.py
 
-@author: edmunm
+This module contains a function for prorating.
 """
 
-def prorate(df, factor, exclusions=None):
+def prorate(df, factor, axis=0):
     """
     Prorates all columns in the DataFrame by the given factor.
     
@@ -15,17 +13,12 @@ def prorate(df, factor, exclusions=None):
         The values to be prorated.
     factor : float
         The prorating factor to multiply by, between 0 and 1.
-    exclusions : iterable
-        A list or similar of columns to be excluded from prorating.
+    axis : int {0, 1}, default 0
+        Axis along which the function is applied.
     
     Returns
     -------
     DataFrame
         The prorated values.
     """
-    if exclusions:
-        prorate_cols = ~df.columns.isin(exclusions)
-        df.loc[:, prorate_cols] = df.loc[:, prorate_cols].mul(factor, axis=0)
-        return df
-    else:
-        return df.mul(factor, axis=0)
+    return df.mul(factor, axis=axis)
