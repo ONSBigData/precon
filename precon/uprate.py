@@ -66,7 +66,10 @@ def get_uprating_factor(indices, base_month, method=None):
     month_values = indices[indices.index.month == base_month]
     
     if base_month == 12:
-        month_values = month_values.tshift(1, freq='MS') 
+        month_values = (
+            month_values.tshift(1, freq='MS')
+            .reindex_like(annual_mean)
+        )
         
     uprating_factor = month_values.div(annual_mean.shift(2))
     
