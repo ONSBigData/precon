@@ -3,11 +3,15 @@
 History
 -------
 
+0.5.1   (2020-06-09)
+++++++++++++++++++++
+
+* Bug fix in uprate function occuring in Q4 periods.
+
 0.5.0   (2020-06-09)
 ++++++++++++++++++++
 
 * Removed the prorate function.
-
 
 0.4.0   (2020-06-05)
 ++++++++++++++++++++
