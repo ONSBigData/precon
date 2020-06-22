@@ -12,6 +12,10 @@ def aggregate(indices, weights, axis=1):
     Takes a set of unchained indices and corresponding weights with matching
     time series index, and produces the weighted aggregate unchained index.
     """
+    if (isinstance(weights, pd.core.series.Series)
+            and isinstance(indices, pd.core.frame.Frame)):
+        weights = weights.to_frame()
+    
     weight_shares = get_weight_shares(weights, axis)
     weight_shares = reindex_weights_to_indices(
         weight_shares,

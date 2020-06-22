@@ -5,9 +5,6 @@ from precon.helpers import reindex_and_fill, axis_flip
 
 def get_weight_shares(weights, axis=1):
     """If not weight shares already, calculates weight shares."""
-    if isinstance(weights, pd.core.frame.Series):
-        weights = weights.to_frame()
-        
     if not weights.sum(axis).round().eq(1).all():
         return weights.div(weights.sum(axis), axis=axis_flip(axis))
     
@@ -16,10 +13,7 @@ def get_weight_shares(weights, axis=1):
 
 
 def reindex_weights_to_indices(weights, indices, axis=0):
-    """If not already indexed like indices, reindexes weights."""
-    if isinstance(weights, pd.core.frame.Series):
-        weights = weights.to_frame()
-        
+    """If not already indexed like indices, reindexes weights."""   
     if not weights.axes[axis].isin(indices.axes[axis]).all():
         raise Exception("Weights index values are not present in indices "
                         "index so can't be reindexed.")
