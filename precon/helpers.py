@@ -5,9 +5,29 @@ import pandas as pd
 from precon._error_handling import assert_argument_is_int
 
 
-def reindex_and_fill(df, like_df, first='ffill', axis=0):
-    """Reindex and fill the DataFrame or Series by given index and axis."""
-    reindexed = df.reindex(like_df.axes[axis], axis=axis)
+def reindex_and_fill(df, other, first='ffill', axis=0):
+    """Reindex and fill the DataFrame or Series by given index and axis.
+    
+    Parameters
+    ----------
+    df : DataFrame
+        The DataFrame to reindex.
+    other : Object of the same data type
+        Its row or column indices are used to define the new indices of
+        the first parameter, depending on axis parameter.
+    first : str
+        Direction to fill first.
+    axis : {0 or ‘index’, 1 or ‘columns’}
+        Whether to compare by the index (0 or ‘index’) or columns
+        (1 or ‘columns’). For Series input, axis to match Series index
+        on.
+        
+    Returns
+    -------
+    DataFrame
+        The reindexed and filled DataFrame.
+    """
+    reindexed = df.reindex(other.axes[axis], axis=axis)
     
     if first == 'ffill':
         reindexed_and_filled = reindexed.ffill(axis).bfill(axis)
