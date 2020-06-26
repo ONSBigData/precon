@@ -7,6 +7,8 @@ from precon import aggregate
 from pandas import Timestamp
 from pandas._testing import assert_frame_equal, assert_series_equal
 
+from precon._error_handling import DateTimeIndexError
+
 
 def test_aggregate(aggregate_combinator):
     """Functional test to test for expected output.
@@ -37,6 +39,55 @@ def test_aggregate_output_type(
     # THEN returned aggregated is of type pandas Series
     aggregated = aggregate(aggregate_indices_3years, aggregate_weights_3years)
     assert isinstance(aggregated, pd.core.series.Series)
+    
+    
+@pytest.mark.parametrize(
+    'indices, weights, axis',
+    [
+        (True, 234, 1),
+        ('dataframe', {}, 0),
+        ([], False, 'columns')
+     ]
+)
+def test_aggregate_handles_incorrect_dtypes(indices, weights, axis):
+    """Test aggregate function raises Value Error if given incorrect
+    types for indices and weights.
+    """
+    with pytest.raises(ValueError):
+        aggregate(indices, weights, axis)
+
+    
+@pytest.mark.parametrize(
+    'indices, weights',
+    [
+        (pd.DataFrame(index=pd.DatetimeIndex(['2012-01'])), pd.DataFrame()),
+        (pd.DataFrame(), pd.DataFrame(index=pd.DatetimeIndex(['2017-01']))),
+        (
+            pd.DataFrame(index=pd.PeriodIndex(['2017-01'], freq='M')),
+            pd.DataFrame(index=pd.PeriodIndex(['2017-01'], freq='M')),
+        )
+     ]
+)
+def test_aggregate_handles_non_datetimeindex(indices, weights):
+    with pytest.raises(DateTimeIndexError):
+        aggregate(indices, weights, 1)
+
+@pytest.mark.parametrize('axis', ['toes', 5, True])
+def test_aggregate_handles_axis(axis):
+    with pytest.raises(ValueError):
+        aggregate(
+            pd.DataFrame(index=pd.DatetimeIndex(['2017-01'])),
+            pd.DataFrame(index=pd.DatetimeIndex(['2017-01'])),
+            axis,
+        )
+    
+
+# (pd.DataFrame(index=pd.DatetimeIndex('2012-01')), pd.DataFrame(), 1),
+#    (
+#        pd.DataFrame(index=pd.DatetimeIndex('2012-01')),
+#        pd.DataFrame(index=pd.DatetimeIndex('2012-01')),
+#        1
+#    ),
     
 # def test_aggregate_output_type(indices, weights):
 #     """Test output type is same is indices."""

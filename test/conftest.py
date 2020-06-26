@@ -160,29 +160,9 @@ def aggregate_outcome_transposed(aggregate_outcome_3years):
     return aggregate_outcome_3years
 
 
-@pytest.fixture()
-def aggregate_indices_periodindex(aggregate_indices_3years):
-    return aggregate_indices_3years.set_index(
-        aggregate_indices_3years.index.to_period()
-    )
-
-
-@pytest.fixture()
-def aggregate_weights_periodindex(aggregate_weights_3years):
-    return aggregate_weights_3years.set_index(
-        aggregate_weights_3years.index.to_period()
-    )
-
-
-@pytest.fixture()
-def aggregate_outcome_periodindex(aggregate_outcome_3years):
-    aggregate_outcome_3years.index = aggregate_outcome_3years.index.to_period()
-    return aggregate_outcome_3years
-
-
 test_inputs = ["indices", "outcome", "weights"]
-names = ["3years", "1year", "6months", "transposed", "periodindex"]
-axis = [1, 1, 1, 0, 1]
+names = ["3years", "1year", "6months", "transposed"]
+axis = [1, 1, 1, 0]
 
 agg_params = [
     tuple(["aggregate_" + var + "_" + name for var in test_inputs])
