@@ -5,26 +5,52 @@ import pandas as pd
 
 from precon.weights import get_weight_shares, reindex_weights_to_indices
 from precon.helpers import reduce_cols, axis_flip
+from precon._error_handling import assert_datetime_index
 
 
-def aggregate(indices, weights, axis=1):
+def aggregate(indices, weights, axis=1, ignore_na_indices=False):
     """
     Takes a set of unchained indices and corresponding weights with matching
     time series index, and produces the weighted aggregate unchained index.
     """
+    assert_datetime_index(indices, 'indices')
+    assert_datetime_index(weights, 'weights')
+    
     if (isinstance(weights, pd.core.series.Series)
             and isinstance(indices, pd.core.frame.Frame)):
         weights = weights.to_frame()
+        
+    if ignore_na_indices and indices.isna().any().any() == True:
+        return (
+            indices.apply(
+                _aggregate_ignore_na,
+                weights=weights,
+                axis=axis,
+            )
+        )
     
-    weight_shares = get_weight_shares(weights, axis)
-    weight_shares = reindex_weights_to_indices(
-        weight_shares,
-        indices,
-        axis_flip(axis)
-    )
-    
-    return indices.mul(weight_shares).sum(axis=axis)
+    else:
+        weight_shares = get_weight_shares(weights, axis)
+        weight_shares = reindex_weights_to_indices(
+            weight_shares,
+            indices,
+            axis_flip(axis)
+        )
+        
+        return indices.mul(weight_shares).sum(axis=axis)
 
+
+def _aggregate_ignore_na(indices, weights):
+    """
+    Returns the aggregate of an indices and weights Series,
+    ignoring the weight of any NaN indices.
+    """
+    na_indices = indices.isna()
+ 
+    weight_shares = get_weight_shares(weights.loc[~na_indices])
+    
+    return indices.loc[~na_indices].mul(weight_shares).sum()
+    
 
 def reaggregate_index(indices, weights, subs):
     """Returns a reaggregated index after substituting.
