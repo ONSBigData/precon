@@ -54,7 +54,7 @@ def assert_argument_is_int(arg, name):
         raise TypeError("{} argument must be an integer".format(name))
 
 
-def check_valid_pandas_arg(df, name, axis):
+def _check_valid_pandas_arg(df, name, axis):
     """ """
     assert_pandas_obj(df, name)
     assert_datetime_index(df, axis, name)
