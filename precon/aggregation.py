@@ -5,21 +5,28 @@ import pandas as pd
 
 from precon.weights import get_weight_shares, reindex_weights_to_indices
 from precon.helpers import reduce_cols, axis_flip
-from precon._error_handling import assert_datetime_index
+from precon._error_handling import _check_valid_pandas_arg, _handle_axis
 
 
 def aggregate(indices, weights, axis=1, ignore_na_indices=False):
     """
-    Takes a set of unchained indices and corresponding weights with matching
-    time series index, and produces the weighted aggregate unchained index.
+    Aggregate unchained indices with weights to get sum product.
+    
+    
+    Parameters
+    ----------
+    
     """
-    assert_datetime_index(indices, 'indices')
-    assert_datetime_index(weights, 'weights')
+    
+    axis = _handle_axis(axis)    
+    _check_valid_pandas_arg(indices, 'indices', axis_flip(axis))
+    _check_valid_pandas_arg(weights, 'weights', axis_flip(axis))
     
     if (isinstance(weights, pd.core.series.Series)
             and isinstance(indices, pd.core.frame.Frame)):
         weights = weights.to_frame()
-        
+    
+    # Step through by each period to ignore NAs
     if ignore_na_indices and indices.isna().any().any() == True:
         return (
             indices.apply(
