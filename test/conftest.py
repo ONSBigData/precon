@@ -5,7 +5,7 @@ import pandas as pd
 from pandas import Timestamp
 
 
-### AGGREGATION FIXTURES
+### AGGREGATION FIXTURES ---------------------------------------------------
 
 @pytest.fixture()
 def aggregate_indices_3years():
@@ -184,4 +184,26 @@ def aggregate_combinator(request):
     
     return indices, outcome, weights, axis
 
+
+### WEIGHTS FIXTURES ------------------------------------------------------
+@pytest.fixture()
+def get_weight_shares_weight_shares_3years():
+    return pd.DataFrame.from_records(
+        [
+            (Timestamp('2012-02-01 00:00:00'), 0.489537029, 0.21362007800000002, 0.29684289199999997),
+            (Timestamp('2013-02-01 00:00:00'), 0.535477885, 0.147572705, 0.31694941),
+            (Timestamp('2014-02-01 00:00:00'), 0.512055362, 0.1940439, 0.293900738),
+        ],
+    ).set_index(0, drop=True)
+
+
+@pytest.fixture()
+def get_weight_shares_weights_3years():
+    return pd.DataFrame.from_records(
+        [
+            (Timestamp('2012-02-01 00:00:00'), 5.1869643839999995, 2.263444179, 3.145244219),
+            (Timestamp('2013-02-01 00:00:00'), 6.74500585, 1.8588606330000002, 3.992369584),
+            (Timestamp('2014-02-01 00:00:00'), 6.23115844, 2.361303832, 3.5764532489999996),
+        ],
+    ).set_index(0, drop=True)
 
