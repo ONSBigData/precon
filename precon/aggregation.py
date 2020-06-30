@@ -49,13 +49,7 @@ def aggregate(
     
     # Step through by each period to ignore NAs
     if ignore_na_indices and indices.isna().any().any() == True:
-        return (
-            indices.apply(
-                _aggregate_ignore_na,
-                weights=weights,
-                axis=axis,
-            )
-        )
+        return indices.apply(_aggregate_ignore_na, indices, weights)
     
     else:
         weight_shares = get_weight_shares(weights, axis)
