@@ -20,24 +20,14 @@ def aggregate(
     """
     Aggregate unchained indices with weights to get sum product.
     
-    
     Parameters
     ----------
-    indices : Series or DataFrame
-        The unchained indices to aggregate.
-    weights : Series or DataFrame
-        The weights to aggregate.
     axis : {0 or ‘index’, 1 or ‘columns’}, default 1
         Axis along which the function is applied:
             * 0 or ‘index’: apply function to each column.
             * 1 or ‘columns’: apply function to each row.
     ignore_na_indices : bool, default False
         Remove NA indices from aggregation step.
-    
-    Returns
-    -------
-    Series
-        The aggregated unchained index.
     """
     axis = _handle_axis(axis)    
     _check_valid_pandas_arg(indices, 'indices', axis_flip(axis))
