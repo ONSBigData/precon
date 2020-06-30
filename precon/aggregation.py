@@ -1,14 +1,22 @@
 """
 Common aggregation functions.    
 """
+from typing import Union, Optional
+
 import pandas as pd
 
 from precon.weights import get_weight_shares, reindex_weights_to_indices
 from precon.helpers import reduce_cols, axis_flip
 from precon._error_handling import _check_valid_pandas_arg, _handle_axis
 
+PandasObj = Union[pd.DataFrame, pd.Series]
+Axis = Union[int, str]
 
-def aggregate(indices, weights, axis=1, ignore_na_indices=False):
+def aggregate(
+        indices: pd.DataFrame,
+        weights: Union[pd.DataFrame, pd.Series],
+        axis: Axis = 1,
+        ignore_na_indices: Optional[bool] = False) -> pd.Series:
     """
     Aggregate unchained indices with weights to get sum product.
     
@@ -31,7 +39,6 @@ def aggregate(indices, weights, axis=1, ignore_na_indices=False):
     Series
         The aggregated unchained index.
     """
-    
     axis = _handle_axis(axis)    
     _check_valid_pandas_arg(indices, 'indices', axis_flip(axis))
     _check_valid_pandas_arg(weights, 'weights', axis_flip(axis))
@@ -61,7 +68,7 @@ def aggregate(indices, weights, axis=1, ignore_na_indices=False):
         return indices.mul(weight_shares).sum(axis=axis)
 
 
-def _aggregate_ignore_na(indices, weights):
+def _aggregate_ignore_na(indices: pd.Series, weights: pd.Series) -> float:
     """
     Returns the aggregate of an indices and weights Series,
     ignoring the weight of any NaN indices.
