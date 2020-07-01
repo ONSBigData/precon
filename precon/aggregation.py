@@ -7,7 +7,9 @@ import pandas as pd
 
 from precon.weights import get_weight_shares, reindex_weights_to_indices
 from precon.helpers import reduce_cols, axis_flip
-from precon._error_handling import _check_valid_pandas_arg, _handle_axis
+from precon._error_handling import _check_valid_pandas_arg
+from precon._error_handling import _assert_equal_axis_labels
+from precon._error_handling import _handle_axis
 
 PandasObj = Union[pd.DataFrame, pd.Series]
 Axis = Union[int, str]
@@ -31,8 +33,7 @@ def aggregate(
     """
     axis = _handle_axis(axis)    
     
-    if (isinstance(weights, pd.core.series.Series)
-            and isinstance(indices, pd.core.frame.DataFrame)):
+    if isinstance(weights, pd.core.series.Series):
         weights = weights.to_frame()
         if axis == 1:
             weights = weights.T
@@ -40,6 +41,8 @@ def aggregate(
     _check_valid_pandas_arg(indices, 'indices', axis_flip(axis))
     _check_valid_pandas_arg(weights, 'weights', axis_flip(axis))
     
+    _assert_equal_axis_labels(indices, weights, axis)
+
     weights = reindex_weights_to_indices(
         weights,
         indices,
