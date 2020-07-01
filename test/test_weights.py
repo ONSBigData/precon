@@ -14,9 +14,9 @@ def test_get_weight_shares_with_weight_shares(
         ):
     """Tests that the function does nothing if already given weight
     shares that sum to 1."""
-    res = get_weight_shares(get_weight_shares_weight_shares_3years)
+    result = get_weight_shares(get_weight_shares_weight_shares_3years)
     
-    assert_frame_equal(res, get_weight_shares_weight_shares_3years)
+    assert_frame_equal(result, get_weight_shares_weight_shares_3years)
 
 
 def test_get_weight_shares_with_weights(
@@ -25,10 +25,10 @@ def test_get_weight_shares_with_weights(
         ):
     """Test that weights are correctly converted to weight shares. As
     an extra check, test that the results all sum to 1."""
-    res = get_weight_shares(get_weight_shares_weights_3years)
+    result = get_weight_shares(get_weight_shares_weights_3years)
     
-    assert_frame_equal(res, get_weight_shares_weight_shares_3years)
-    assert np.allclose(res.sum(1), np.ones((3, 1)))
+    assert_frame_equal(result, get_weight_shares_weight_shares_3years)
+    assert np.allclose(result.sum(1), np.ones((3, 1)))
 
 
 if __name__ == "__main__":
