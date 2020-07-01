@@ -30,39 +30,30 @@ def aggregate(
         Remove NA indices from aggregation step.
     """
     axis = _handle_axis(axis)    
+    
+    if (isinstance(weights, pd.core.series.Series)
+            and isinstance(indices, pd.core.frame.DataFrame)):
+        weights = weights.to_frame()
+        if axis == 1:
+            weights = weights.T
+    
     _check_valid_pandas_arg(indices, 'indices', axis_flip(axis))
     _check_valid_pandas_arg(weights, 'weights', axis_flip(axis))
     
-    if (isinstance(weights, pd.core.series.Series)
-            and isinstance(indices, pd.core.frame.Frame)):
-        weights = weights.to_frame()
+    weights = reindex_weights_to_indices(
+        weights,
+        indices,
+        axis_flip(axis),
+    )
     
     # Step through by each period to ignore NAs
-    if ignore_na_indices and indices.isna().any().any() == True:
-        return indices.apply(_aggregate_ignore_na, indices, weights)
+    if ignore_na_indices:
+        weights[indices.isna()] = 0
     
-    else:
-        weight_shares = get_weight_shares(weights, axis)
-        weight_shares = reindex_weights_to_indices(
-            weight_shares,
-            indices,
-            axis_flip(axis)
-        )
-        
-        return indices.mul(weight_shares).sum(axis=axis)
 
+    weight_shares = get_weight_shares(weights, axis)
+    return indices.mul(weight_shares).sum(axis=axis)
 
-def _aggregate_ignore_na(indices: pd.Series, weights: pd.Series) -> float:
-    """
-    Returns the aggregate of an indices and weights Series,
-    ignoring the weight of any NaN indices.
-    """
-    na_indices = indices.isna()
- 
-    weight_shares = get_weight_shares(weights.loc[~na_indices])
-    
-    return indices.loc[~na_indices].mul(weight_shares).sum()
-    
 
 def reaggregate_index(indices, weights, subs):
     """Returns a reaggregated index after substituting.
