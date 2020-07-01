@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
-
 import pytest
+import numpy as np
 import pandas as pd
 from pandas import Timestamp
 
+from .helpers import Params
 
 ### AGGREGATION FIXTURES ---------------------------------------------------
 
@@ -109,11 +110,12 @@ def aggregate_weights_3years():
 def aggregate_weight_shares_3years():
     return pd.DataFrame.from_records(
         [
-            (Timestamp('2012-02-01 00:00:00'), 0.489537029, 0.21362007800000002, 0.29684289199999997),
-            (Timestamp('2013-02-01 00:00:00'), 0.535477885, 0.147572705, 0.31694941),
-            (Timestamp('2014-02-01 00:00:00'), 0.512055362, 0.1940439, 0.293900738),
+            (Timestamp('2012-01-01 00:00:00'), 0.489537029, 0.21362007800000002, 0.29684289199999997),
+            (Timestamp('2013-01-01 00:00:00'), 0.535477885, 0.147572705, 0.31694941),
+            (Timestamp('2014-01-01 00:00:00'), 0.512055362, 0.1940439, 0.293900738),
         ],
     ).set_index(0, drop=True)
+
 
 @pytest.fixture()
 def aggregate_indices_1year(aggregate_indices_3years):
@@ -160,20 +162,105 @@ def aggregate_outcome_transposed(aggregate_outcome_3years):
     return aggregate_outcome_3years
 
 
-test_inputs = ["indices", "outcome", "weights"]
-names = ["3years", "1year", "6months", "transposed"]
-axis = [1, 1, 1, 0]
+@pytest.fixture()
+def aggregate_indices_missing(aggregate_indices_3years):
+    aggregate_indices_missing = aggregate_indices_3years.copy()
+    
+    change_to_nans = [
+        ('2012-06', 2),
+        ('2012-12', 3),
+        ('2013-10', 2),
+        ('2014-07', 1),
+    ]
+    
+    for sl in change_to_nans:
+        aggregate_indices_missing.loc[sl] = np.nan
+    
+    return aggregate_indices_missing
+
+
+@pytest.fixture()
+def aggregate_weights_missing(aggregate_weights_3years):
+    return aggregate_weights_3years
+
+
+@pytest.fixture()
+def aggregate_outcome_missing():
+    return pd.DataFrame.from_records(
+        [
+            (Timestamp('2012-01-01 00:00:00'), 100.0),
+            (Timestamp('2012-02-01 00:00:00'), 99.22169156),
+            (Timestamp('2012-03-01 00:00:00'), 100.29190240000001),
+            (Timestamp('2012-04-01 00:00:00'), 100.10739720000001),
+            (Timestamp('2012-05-01 00:00:00'), 99.78134264),
+            (Timestamp('2012-06-01 00:00:00'), 98.75024119),
+            (Timestamp('2012-07-01 00:00:00'), 100.4796172),
+            (Timestamp('2012-08-01 00:00:00'), 100.7233716),
+            (Timestamp('2012-09-01 00:00:00'), 101.31654509999998),
+            (Timestamp('2012-10-01 00:00:00'), 100.5806089),
+            (Timestamp('2012-11-01 00:00:00'), 100.9697697),
+            (Timestamp('2012-12-01 00:00:00'), 105.2864531),
+            (Timestamp('2013-01-01 00:00:00'), 99.45617890000001),
+            (Timestamp('2013-02-01 00:00:00'), 100.08652959999999),
+            (Timestamp('2013-03-01 00:00:00'), 100.0866599),
+            (Timestamp('2013-04-01 00:00:00'), 99.7722843),
+            (Timestamp('2013-05-01 00:00:00'), 98.35278839),
+            (Timestamp('2013-06-01 00:00:00'), 96.00322344),
+            (Timestamp('2013-07-01 00:00:00'), 95.96105198),
+            (Timestamp('2013-08-01 00:00:00'), 97.82558448),
+            (Timestamp('2013-09-01 00:00:00'), 98.03388747),
+            (Timestamp('2013-10-01 00:00:00'), 96.08353503),
+            (Timestamp('2013-11-01 00:00:00'), 98.59512718),
+            (Timestamp('2013-12-01 00:00:00'), 99.23888357),
+            (Timestamp('2014-01-01 00:00:00'), 102.2042938),
+            (Timestamp('2014-02-01 00:00:00'), 100.3339127),
+            (Timestamp('2014-03-01 00:00:00'), 101.4726729),
+            (Timestamp('2014-04-01 00:00:00'), 101.17674840000001),
+            (Timestamp('2014-05-01 00:00:00'), 102.57269570000001),
+            (Timestamp('2014-06-01 00:00:00'), 102.9223313),
+            (Timestamp('2014-07-01 00:00:00'), 97.38610996),
+            (Timestamp('2014-08-01 00:00:00'), 102.3992605),
+            (Timestamp('2014-09-01 00:00:00'), 102.54967020000001),
+            (Timestamp('2014-10-01 00:00:00'), 102.35333840000001),
+            (Timestamp('2014-11-01 00:00:00'), 101.8451732),
+            (Timestamp('2014-12-01 00:00:00'), 102.8815443),
+        ],
+    ).set_index(0, drop=True).squeeze()
+
+
+@pytest.fixture()
+def aggregate_indices_missing_transposed(aggregate_indices_missing):
+    return aggregate_indices_missing.T
+
+
+@pytest.fixture()
+def aggregate_weights_missing_transposed(aggregate_weights_missing):
+    return aggregate_weights_missing.T
+
+
+@pytest.fixture()
+def aggregate_outcome_missing_transposed(aggregate_outcome_missing):
+    return aggregate_outcome_missing
+    
+
+
+class AggParams(Params):
+    name = "aggregate"
+    test_inputs = ["indices", "outcome", "weights"]
+
 
 agg_params = [
-    tuple(["aggregate_" + var + "_" + name for var in test_inputs])
-    for name in names
+    AggParams(case="3years", axis=1, ignore_na_values=False),
+    AggParams(case="1year", axis=1, ignore_na_values=False),
+    AggParams(case="6months", axis=1, ignore_na_values=False),
+    AggParams(case="transposed", axis=0, ignore_na_values=False),
+    AggParams(case="missing", axis=1, ignore_na_values=True),
+    AggParams(case="missing_transposed", axis=0, ignore_na_values=True),
 ]
 
-agg_params = [params + (axis[i],) for i, params in enumerate(agg_params)]
-
 @pytest.fixture(
-    params=[*agg_params],
-    ids=names,
+    params=[x.to_tuple() for x in agg_params],
+    ids=[x.case for x in agg_params],
 )
 def aggregate_combinator(request):
     """ """
@@ -181,8 +268,9 @@ def aggregate_combinator(request):
     outcome = request.getfixturevalue(request.param[1])
     weights = request.getfixturevalue(request.param[2])
     axis = request.param[3]
+    ignore_na_values = request.param[4]
     
-    return indices, outcome, weights, axis
+    return indices, outcome, weights, axis, ignore_na_values
 
 
 ### WEIGHTS FIXTURES ------------------------------------------------------
