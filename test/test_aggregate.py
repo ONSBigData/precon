@@ -19,6 +19,9 @@ def test_aggregate(aggregate_combinator):
         * 1 year, 3 indices, 3 weights
         * 6 months, 3 indices, 3 weights
         * 3 years, 3 indices (transposed), 3 weights (transposed)
+        * 3 years, 3 indices (missing values), 3 weights
+        * 3 years, 3 indices (missing values + transposed),
+            3 weights (transposed)
     """
     # GIVEN indices and weights
     # AND the outcome
@@ -31,7 +34,7 @@ def test_aggregate(aggregate_combinator):
     assert_series_equal(aggregated, outcome, check_names=False)
 
 
-def test_aggregate_output_type(
+def test_aggregate_output_type_weight_dataframe(
         aggregate_indices_3years, aggregate_weights_3years
         ):
     """The aggregate function should return a pandas Series."""
@@ -40,6 +43,17 @@ def test_aggregate_output_type(
     # THEN returned aggregated is of type pandas Series
     aggregated = aggregate(aggregate_indices_3years, aggregate_weights_3years)
     assert isinstance(aggregated, pd.core.series.Series)
+
+
+def test_aggregate_output_type_weight_series(
+        aggregate_indices_6months, aggregate_weights_6months,
+        ):
+    """The aggregate function should return a pandas Series."""
+    # GIVEN indices DataFrame and weights Series
+    # WHEN they are aggregated together
+    # THEN returned aggregated is of type pandas Series
+    aggregated = aggregate(aggregate_indices_6months, aggregate_weights_6months)
+    assert isinstance(aggregated, pd.Series)
     
     
 @pytest.mark.parametrize(
@@ -81,21 +95,9 @@ def test_aggregate_handles_axis(axis):
             pd.DataFrame(index=pd.DatetimeIndex(['2017-01'])),
             pd.DataFrame(index=pd.DatetimeIndex(['2017-01'])),
             axis,
-        )
+        ) 
     
 
-# (pd.DataFrame(index=pd.DatetimeIndex('2012-01')), pd.DataFrame(), 1),
-#    (
-#        pd.DataFrame(index=pd.DatetimeIndex('2012-01')),
-#        pd.DataFrame(index=pd.DatetimeIndex('2012-01')),
-#        1
-#    ),
-    
-# def test_aggregate_output_type(indices, weights):
-#     """Test output type is same is indices."""
-#     aggregated = aggregate(indices, weights)
-#     assert type(indices) == type(aggregated)
-    
 
 # def test_aggregate_output_not_na(indices, weights):
 #     """Test that there are no additional NAs in the output."""
@@ -161,6 +163,10 @@ if __name__ == "__main__":
             (Timestamp('2014-01-01 00:00:00'), 6.23115844, 2.361303832, 3.5764532489999996),
         ],
     ).set_index(0, drop=True)
+    
+    weights.columns = [0, 5, 3]
+    weights = weights['2012']
+    indices = indices['2012-06']
     
     aggregated = aggregate(indices, weights)
     
