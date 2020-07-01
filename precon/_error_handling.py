@@ -3,7 +3,6 @@ Reusable exceptions for the precon package.
 """
 
 import pandas as pd
-from pandas.core.dtypes.generic import ABCDataFrame, ABCSeries, ABCDatetimeIndex
 
 ### Exceptions
 class DateTimeIndexError(Exception):
@@ -18,8 +17,8 @@ def assert_columns_equal(df1, df2, message):
 
 def assert_pandas_obj(df, name):
     """ """
-    if not (isinstance(df, ABCSeries)
-            or isinstance(df, ABCDataFrame)):
+    if not (isinstance(df, pd.Series)
+            or isinstance(df, pd.DataFrame)):
         err_msg = (
             f"Argument passed to {name} should be of pandas type "
             "DataFrame or Series."
@@ -29,16 +28,16 @@ def assert_pandas_obj(df, name):
 
 def assert_datetime_index(df, axis, name=None):
     """ """
-    if not isinstance(df.axes[axis], ABCDatetimeIndex):
+    if not isinstance(df.axes[axis], pd.DatetimeIndex):
         if not name:
             err_msg = (
                 "Expected DatetimeIndex, but got index type "
-                f" {type(df.index)} instead."
+                f" {type(df.axes[axis])} instead."
             )
         else:
             err_msg = (
                 f"Expected DatetimeIndex for {name}, but got index type "
-                f" {type(df.index)} instead."
+                f" {type(df.axes[axis])} instead."
             )
         raise DateTimeIndexError(err_msg)
         
