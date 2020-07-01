@@ -1,6 +1,7 @@
 """
-Tests for `precon` module.
+Tests for `aggregate` module.
 """
+import numpy as np
 import pandas as pd
 import pytest
 from precon import aggregate
@@ -23,9 +24,9 @@ def test_aggregate(aggregate_combinator):
     # AND the outcome
     # WHEN indices and weights are aggregated together
     # THEN they should equal the outcome
-    indices, outcome, weights, axis = aggregate_combinator
+    indices, outcome, weights, axis, ignore_na_indices = aggregate_combinator
     
-    aggregated = aggregate(indices, weights, axis)
+    aggregated = aggregate(indices, weights, axis, ignore_na_indices)
 
     assert_series_equal(aggregated, outcome, check_names=False)
 
@@ -71,6 +72,7 @@ def test_aggregate_handles_incorrect_dtypes(indices, weights, axis):
 def test_aggregate_handles_non_datetimeindex(indices, weights):
     with pytest.raises(DateTimeIndexError):
         aggregate(indices, weights, 1)
+
 
 @pytest.mark.parametrize('axis', ['toes', 5, True])
 def test_aggregate_handles_axis(axis):
@@ -154,11 +156,53 @@ if __name__ == "__main__":
     
     weights = pd.DataFrame.from_records(
         [
-            (Timestamp('2012-02-01 00:00:00'), 5.1869643839999995, 2.263444179, 3.145244219),
-            (Timestamp('2013-02-01 00:00:00'), 6.74500585, 1.8588606330000002, 3.992369584),
-            (Timestamp('2014-02-01 00:00:00'), 6.23115844, 2.361303832, 3.5764532489999996),
+            (Timestamp('2012-01-01 00:00:00'), 5.1869643839999995, 2.263444179, 3.145244219),
+            (Timestamp('2013-01-01 00:00:00'), 6.74500585, 1.8588606330000002, 3.992369584),
+            (Timestamp('2014-01-01 00:00:00'), 6.23115844, 2.361303832, 3.5764532489999996),
         ],
     ).set_index(0, drop=True)
     
     aggregated = aggregate(indices, weights)
+    
+
+    indices2 = pd.DataFrame.from_records(
+        [
+            (Timestamp('2013-01-01 00:00:00'), 100.0, 100.0, 100.0),
+            (Timestamp('2013-02-01 00:00:00'), 97.02107546, 96.33756279, 96.85624492),
+            (Timestamp('2013-03-01 00:00:00'), 100.2030568, 99.38630881, np.nan),
+            (Timestamp('2013-04-01 00:00:00'), 103.9939693, 103.707301, 102.8423593),
+            (Timestamp('2013-05-01 00:00:00'), 107.55573159999999, np.nan, 106.4030102),
+            (Timestamp('2013-06-01 00:00:00'), 102.15950079999999, 102.1210296, 103.6548477),
+            (Timestamp('2013-07-01 00:00:00'), 106.83231370000001, 105.71647240000001, 106.23764979999999),
+        ],
+    ).set_index(0, drop=True)
+
+
+    weights2 = pd.DataFrame.from_records(
+       [(Timestamp('2013-01-01 00:00:00'), 13.1223919, 7.90254844, 3.20531341),]
+    ).set_index(0, drop=True).squeeze()
+
+
+    aggregated2 = aggregate(indices2.T, weights2.T, axis=0, ignore_na_indices=True)
+    aggregated3 = aggregate(indices2, weights2, axis=1, ignore_na_indices=True)
+    
+    
+    def aggregate_indices_missing(aggregate_indices_3years):
+        """ """
+        aggregate_indices_missing = aggregate_indices_3years.copy()
+        
+        change_to_nans = [
+            ('2012-06', 2),
+            ('2012-12', 3),
+            ('2013-10', 2),
+            ('2014-07', 1),
+        ]
+        
+        for sl in change_to_nans:
+            aggregate_indices_missing.loc[sl] = np.nan
+        
+        return aggregate_indices_missing
+    
+    indices_missing = aggregate_indices_missing(indices)
+    aggregated3 = aggregate(indices_missing, weights, ignore_na_indices=True)
     
