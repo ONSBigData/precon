@@ -1,15 +1,21 @@
 # -*- coding: utf-8 -*-
+from typing import Union
+from dataclasses import dataclass
+from collections import namedtuple
 import pytest
 import numpy as np
 import pandas as pd
 from pandas import Timestamp
 
-from .helpers import Params
+# from .helpers import Params
 
-### AGGREGATION FIXTURES ---------------------------------------------------
+def idfunc(value):
+    return value.name
+
+### REUSABLE FIXTURES --------------------------------------------------------
 
 @pytest.fixture()
-def aggregate_indices_3years():
+def indices_3years():
     """Three indices over 3 years."""
     return pd.DataFrame.from_records(
         [
@@ -52,6 +58,92 @@ def aggregate_indices_3years():
         ],
     ).set_index(0, drop=True)
 
+
+@pytest.fixture()
+def weights_3years():
+    return pd.DataFrame.from_records(
+        [
+            (Timestamp('2012-01-01 00:00:00'), 5.1869643839999995, 2.263444179, 3.145244219),
+            (Timestamp('2013-01-01 00:00:00'), 6.74500585, 1.8588606330000002, 3.992369584),
+            (Timestamp('2014-01-01 00:00:00'), 6.23115844, 2.361303832, 3.5764532489999996),
+        ],
+    ).set_index(0, drop=True)
+
+
+@pytest.fixture()
+def weights_3years_start_feb(weights_3years):
+    return weights_3years.tshift(1, freq='MS')
+
+
+@pytest.fixture()
+def weight_shares_3years():
+    return pd.DataFrame.from_records(
+        [
+            (Timestamp('2012-01-01 00:00:00'), 0.489537029, 0.21362007800000002, 0.29684289199999997),
+            (Timestamp('2013-01-01 00:00:00'), 0.535477885, 0.147572705, 0.31694941),
+            (Timestamp('2014-01-01 00:00:00'), 0.512055362, 0.1940439, 0.293900738),
+        ],
+    ).set_index(0, drop=True)
+
+
+@pytest.fixture()
+def weights_shares_start_feb(weight_shares_3years):
+    return weight_shares_3years.tshift(1, freq='MS')
+
+
+@pytest.fixture()
+def indices_1year(indices_3years):
+    return indices_3years.loc['2012', :]
+
+
+@pytest.fixture()
+def weights_1year(weights_3years):
+    return weights_3years.loc['2012',  :]
+
+
+@pytest.fixture()
+def indices_6months(indices_3years):
+    return indices_3years.loc['2012-Jan':'2012-Jun', :]
+
+
+@pytest.fixture()
+def weights_6months(weights_3years):
+    return weights_3years.loc['2012',  :]
+
+
+@pytest.fixture()
+def indices_transposed(indices_3years):
+    return indices_3years.T
+
+
+@pytest.fixture()
+def weights_transposed(weights_3years):
+    return weights_3years.T
+
+
+@pytest.fixture()
+def indices_missing(indices_3years):
+    indices_missing = indices_3years.copy()
+    
+    change_to_nans = [
+        ('2012-06', 2),
+        ('2012-12', 3),
+        ('2013-10', 2),
+        ('2014-07', 1),
+    ]
+    
+    for sl in change_to_nans:
+        indices_missing.loc[sl] = np.nan
+    
+    return indices_missing
+
+
+@pytest.fixture()
+def indices_missing_transposed(indices_missing):
+    return indices_missing.T
+
+
+### AGGREGATION FIXTURES --------------------------------------------------------
 @pytest.fixture()
 def aggregate_outcome_3years():
     return pd.DataFrame.from_records(
@@ -97,92 +189,13 @@ def aggregate_outcome_3years():
 
 
 @pytest.fixture()
-def aggregate_weights_3years():
-    return pd.DataFrame.from_records(
-        [
-            (Timestamp('2012-01-01 00:00:00'), 5.1869643839999995, 2.263444179, 3.145244219),
-            (Timestamp('2013-01-01 00:00:00'), 6.74500585, 1.8588606330000002, 3.992369584),
-            (Timestamp('2014-01-01 00:00:00'), 6.23115844, 2.361303832, 3.5764532489999996),
-        ],
-    ).set_index(0, drop=True)
-
-
-@pytest.fixture()
-def aggregate_weight_shares_3years():
-    return pd.DataFrame.from_records(
-        [
-            (Timestamp('2012-01-01 00:00:00'), 0.489537029, 0.21362007800000002, 0.29684289199999997),
-            (Timestamp('2013-01-01 00:00:00'), 0.535477885, 0.147572705, 0.31694941),
-            (Timestamp('2014-01-01 00:00:00'), 0.512055362, 0.1940439, 0.293900738),
-        ],
-    ).set_index(0, drop=True)
-
-
-@pytest.fixture()
-def aggregate_indices_1year(aggregate_indices_3years):
-    return aggregate_indices_3years.loc['2012', :]
-
-
-@pytest.fixture()
 def aggregate_outcome_1year(aggregate_outcome_3years):
     return aggregate_outcome_3years.loc['2012']
 
 
 @pytest.fixture()
-def aggregate_weights_1year(aggregate_weights_3years):
-    return aggregate_weights_3years.loc['2012',  :]
-
-
-@pytest.fixture()
-def aggregate_indices_6months(aggregate_indices_3years):
-    return aggregate_indices_3years.loc['2012-Jan':'2012-Jun', :]
-
-
-@pytest.fixture()
 def aggregate_outcome_6months(aggregate_outcome_3years):
     return aggregate_outcome_3years.loc['2012-Jan':'2012-Jun']
-
-
-@pytest.fixture()
-def aggregate_weights_6months(aggregate_weights_3years):
-    return aggregate_weights_3years.loc['2012',  :]
-
-
-@pytest.fixture()
-def aggregate_indices_transposed(aggregate_indices_3years):
-    return aggregate_indices_3years.T
-
-
-@pytest.fixture()
-def aggregate_weights_transposed(aggregate_weights_3years):
-    return aggregate_weights_3years.T
-
-
-@pytest.fixture()
-def aggregate_outcome_transposed(aggregate_outcome_3years):
-    return aggregate_outcome_3years
-
-
-@pytest.fixture()
-def aggregate_indices_missing(aggregate_indices_3years):
-    aggregate_indices_missing = aggregate_indices_3years.copy()
-    
-    change_to_nans = [
-        ('2012-06', 2),
-        ('2012-12', 3),
-        ('2013-10', 2),
-        ('2014-07', 1),
-    ]
-    
-    for sl in change_to_nans:
-        aggregate_indices_missing.loc[sl] = np.nan
-    
-    return aggregate_indices_missing
-
-
-@pytest.fixture()
-def aggregate_weights_missing(aggregate_weights_3years):
-    return aggregate_weights_3years
 
 
 @pytest.fixture()
@@ -228,50 +241,74 @@ def aggregate_outcome_missing():
         ],
     ).set_index(0, drop=True).squeeze()
 
-
-@pytest.fixture()
-def aggregate_indices_missing_transposed(aggregate_indices_missing):
-    return aggregate_indices_missing.T
-
-
-@pytest.fixture()
-def aggregate_weights_missing_transposed(aggregate_weights_missing):
-    return aggregate_weights_missing.T
-
-
-@pytest.fixture()
-def aggregate_outcome_missing_transposed(aggregate_outcome_missing):
-    return aggregate_outcome_missing
+@dataclass
+class AggTestCase:
+    name: str
+    indices: str
+    weights: str
+    outcome: str
+    axis: Union[str, int] = 1
+    ignore_na_values: bool = False
     
-
-
-class AggParams(Params):
-    name = "aggregate"
-    test_inputs = ["indices", "outcome", "weights"]
-
+# AggTestCase = namedtuple("AggTestCase", ["name", "indices", "weights", "outcome", "axis", "ignore_na_values"])
+# AggTestCase
 
 agg_params = [
-    AggParams(case="3years", axis=1, ignore_na_values=False),
-    AggParams(case="1year", axis=1, ignore_na_values=False),
-    AggParams(case="6months", axis=1, ignore_na_values=False),
-    AggParams(case="transposed", axis=0, ignore_na_values=False),
-    AggParams(case="missing", axis=1, ignore_na_values=True),
-    AggParams(case="missing_transposed", axis=0, ignore_na_values=True),
+    AggTestCase(
+        name="3years",
+        indices="indices_3years",
+        weights="weights_3years",
+        outcome="aggregate_outcome_3years",
+    ),
+    AggTestCase(
+        name="1year",
+        indices="indices_1year",
+        weights="weights_1year",
+        outcome="aggregate_outcome_1year",
+    ),
+    AggTestCase(
+        name="6months",
+        indices="indices_6months",
+        weights="weights_6months",
+        outcome="aggregate_outcome_6months",
+    ),
+    AggTestCase(
+        name="transposed",
+        indices="indices_transposed",
+        weights="weights_transposed",
+        outcome="aggregate_outcome_3years",
+        axis=0,
+    ),
+    AggTestCase(
+        name="missing",
+        indices="indices_missing",
+        weights="weights_3years",
+        outcome="aggregate_outcome_missing",
+        ignore_na_values=True,
+    ),
+    AggTestCase(
+        name="missing_transposed",
+        indices="indices_missing_transposed",
+        weights="weights_transposed",
+        outcome="aggregate_outcome_missing",
+        axis=0,
+        ignore_na_values=True,
+    ),
 ]
-
 @pytest.fixture(
-    params=[x.to_tuple() for x in agg_params],
-    ids=[x.case for x in agg_params],
+    params=[*agg_params],
+    ids=idfunc,
 )
 def aggregate_combinator(request):
     """ """
-    indices = request.getfixturevalue(request.param[0])
-    outcome = request.getfixturevalue(request.param[1])
-    weights = request.getfixturevalue(request.param[2])
-    axis = request.param[3]
-    ignore_na_values = request.param[4]
+    indices = request.getfixturevalue(request.param.indices)
+    weights = request.getfixturevalue(request.param.weights)
+    outcome = request.getfixturevalue(request.param.outcome)
+
+    axis = request.param.axis
+    ignore_na_values = request.param.ignore_na_values
     
-    return indices, outcome, weights, axis, ignore_na_values
+    return indices, weights, outcome, axis, ignore_na_values
 
 
 ### WEIGHTS FIXTURES ------------------------------------------------------

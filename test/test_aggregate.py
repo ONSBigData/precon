@@ -27,7 +27,7 @@ def test_aggregate(aggregate_combinator):
     # AND the outcome
     # WHEN indices and weights are aggregated together
     # THEN they should equal the outcome
-    indices, outcome, weights, axis, ignore_na_indices = aggregate_combinator
+    indices, weights, outcome, axis, ignore_na_indices = aggregate_combinator
     
     aggregated = aggregate(indices, weights, axis, ignore_na_indices)
 
@@ -35,24 +35,24 @@ def test_aggregate(aggregate_combinator):
 
 
 def test_aggregate_output_type_weight_dataframe(
-        aggregate_indices_3years, aggregate_weights_3years
+        indices_3years, weights_3years,
         ):
     """The aggregate function should return a pandas Series."""
     # GIVEN indices and weights pandas DataFrames
     # WHEN they are aggregated together
     # THEN returned aggregated is of type pandas Series
-    aggregated = aggregate(aggregate_indices_3years, aggregate_weights_3years)
+    aggregated = aggregate(indices_3years, weights_3years)
     assert isinstance(aggregated, pd.core.series.Series)
 
 
 def test_aggregate_output_type_weight_series(
-        aggregate_indices_6months, aggregate_weights_6months,
+        indices_6months, weights_6months,
         ):
     """The aggregate function should return a pandas Series."""
     # GIVEN indices DataFrame and weights Series
     # WHEN they are aggregated together
     # THEN returned aggregated is of type pandas Series
-    aggregated = aggregate(aggregate_indices_6months, aggregate_weights_6months)
+    aggregated = aggregate(indices_6months, weights_6months)
     assert isinstance(aggregated, pd.Series)
     
     
