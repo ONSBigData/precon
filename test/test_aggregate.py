@@ -1,6 +1,9 @@
 """
 Tests for `aggregate` module.
 """
+from dataclasses import dataclass
+from typing import Union
+
 import numpy as np
 import pandas as pd
 import pytest
@@ -9,6 +12,72 @@ from pandas import Timestamp
 from pandas._testing import assert_frame_equal, assert_series_equal
 
 from precon._error_handling import DateTimeIndexError
+
+@dataclass
+class AggTestCase:
+    name: str
+    indices: str
+    weights: str
+    outcome: str
+    axis: Union[str, int] = 1
+    ignore_na_values: bool = False
+
+
+@pytest.fixture(
+    params=[
+        AggTestCase(
+            name="3years",
+            indices="indices_3years",
+            weights="weights_3years",
+            outcome="aggregate_outcome_3years",
+        ),
+        AggTestCase(
+            name="1year",
+            indices="indices_1year",
+            weights="weights_1year",
+            outcome="aggregate_outcome_1year",
+        ),
+        AggTestCase(
+            name="6months",
+            indices="indices_6months",
+            weights="weights_6months",
+            outcome="aggregate_outcome_6months",
+        ),
+        AggTestCase(
+            name="transposed",
+            indices="indices_transposed",
+            weights="weights_transposed",
+            outcome="aggregate_outcome_3years",
+            axis=0,
+        ),
+        AggTestCase(
+            name="missing",
+            indices="indices_missing",
+            weights="weights_3years",
+            outcome="aggregate_outcome_missing",
+            ignore_na_values=True,
+        ),
+        AggTestCase(
+            name="missing_transposed",
+            indices="indices_missing_transposed",
+            weights="weights_transposed",
+            outcome="aggregate_outcome_missing",
+            axis=0,
+            ignore_na_values=True,
+        ),
+    ],
+    ids=lambda v: v.name,
+)
+def aggregate_combinator(request):
+    """ """
+    indices = request.getfixturevalue(request.param.indices)
+    weights = request.getfixturevalue(request.param.weights)
+    outcome = request.getfixturevalue(request.param.outcome)
+
+    axis = request.param.axis
+    ignore_na_values = request.param.ignore_na_values
+    
+    return indices, weights, outcome, axis, ignore_na_values
 
 
 def test_aggregate(aggregate_combinator):
@@ -75,12 +144,18 @@ def test_aggregate_handles_incorrect_dtypes(indices, weights, axis):
 @pytest.mark.parametrize(
     'indices, weights',
     [
-        (pd.DataFrame(index=pd.DatetimeIndex(['2012-01'])), pd.DataFrame()),
-        (pd.DataFrame(), pd.DataFrame(index=pd.DatetimeIndex(['2017-01']))),
+        (
+            pd.DataFrame(index=pd.DatetimeIndex(['2012-01'])),
+            pd.DataFrame()
+        ),
+        (
+            pd.DataFrame(),
+            pd.DataFrame(index=pd.DatetimeIndex(['2017-01']))
+        ),
         (
             pd.DataFrame(index=pd.PeriodIndex(['2017-01'], freq='M')),
             pd.DataFrame(index=pd.PeriodIndex(['2017-01'], freq='M')),
-        )
+        ),
      ]
 )
 def test_aggregate_handles_non_datetimeindex(indices, weights):
