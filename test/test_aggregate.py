@@ -131,7 +131,8 @@ def test_aggregate_output_type_weight_series(
         (True, 234, 1),
         ('dataframe', {}, 0),
         ([], False, 'columns')
-     ]
+     ],
+    ids=["bool_int", "str_dict", "list_bool"],
 )
 def test_aggregate_handles_incorrect_dtypes(indices, weights, axis):
     """Test aggregate function raises Value Error if given incorrect
@@ -156,7 +157,8 @@ def test_aggregate_handles_incorrect_dtypes(indices, weights, axis):
             pd.DataFrame(index=pd.PeriodIndex(['2017-01'], freq='M')),
             pd.DataFrame(index=pd.PeriodIndex(['2017-01'], freq='M')),
         ),
-     ]
+     ],
+    ids=["weights_nondatetime", "indices_nondatetime", "both_period_indices"],
 )
 def test_aggregate_handles_non_datetimeindex(indices, weights):
     with pytest.raises(DateTimeIndexError):
