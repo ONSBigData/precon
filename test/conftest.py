@@ -4,11 +4,6 @@ import numpy as np
 import pandas as pd
 from pandas import Timestamp
 
-# from .helpers import Params
-
-# def idfunc(value):
-#     return value.name
-
 ### REUSABLE FIXTURES --------------------------------------------------------
 
 @pytest.fixture()
@@ -140,7 +135,8 @@ def indices_missing_transposed(indices_missing):
     return indices_missing.T
 
 
-### AGGREGATION FIXTURES --------------------------------------------------------
+### AGGREGATION FIXTURES -----------------------------------------------------
+
 @pytest.fixture()
 def aggregate_outcome_3years():
     return pd.DataFrame.from_records(
@@ -239,44 +235,10 @@ def aggregate_outcome_missing():
     ).set_index(0, drop=True).squeeze()
 
 
-
-
 ### WEIGHTS FIXTURES ------------------------------------------------------
 @pytest.fixture()
-def get_weight_shares_weight_shares_3years():
-    return pd.DataFrame.from_records(
-        [
-            (Timestamp('2012-02-01 00:00:00'), 0.489537029, 0.21362007800000002, 0.29684289199999997),
-            (Timestamp('2013-02-01 00:00:00'), 0.535477885, 0.147572705, 0.31694941),
-            (Timestamp('2014-02-01 00:00:00'), 0.512055362, 0.1940439, 0.293900738),
-        ],
-    ).set_index(0, drop=True)
-
-
-@pytest.fixture()
-def get_weight_shares_weights_3years():
-    return pd.DataFrame.from_records(
-        [
-            (Timestamp('2012-02-01 00:00:00'), 5.1869643839999995, 2.263444179, 3.145244219),
-            (Timestamp('2013-02-01 00:00:00'), 6.74500585, 1.8588606330000002, 3.992369584),
-            (Timestamp('2014-02-01 00:00:00'), 6.23115844, 2.361303832, 3.5764532489999996),
-        ],
-    ).set_index(0, drop=True)
-
-
-@pytest.fixture()
-def reindex_weights_to_indices_weights_start_jan(get_weight_shares_weights_3years):
-    return get_weight_shares_weights_3years.tshift(-1, freq='MS')
-
-
-@pytest.fixture()
-def reindex_weights_to_indices_weights_start_feb(get_weight_shares_weights_3years):
-    return get_weight_shares_weights_3years
-
-
-@pytest.fixture()
 def reindex_weights_to_indices_outcome_start_jan():
-    pd.DataFrame.from_records(
+    return pd.DataFrame.from_records(
         [
             (Timestamp('2012-01-01 00:00:00'), 5.1869643839999995, 2.263444179, 3.145244219),
             (Timestamp('2012-02-01 00:00:00'), 5.1869643839999995, 2.263444179, 3.145244219),
@@ -320,7 +282,7 @@ def reindex_weights_to_indices_outcome_start_jan():
 
 @pytest.fixture()
 def reindex_weights_to_indices_outcome_start_feb():
-    pd.DataFrame.from_records(
+    return pd.DataFrame.from_records(
         [
             (Timestamp('2012-01-01 00:00:00'), 5.1869643839999995, 2.263444179, 3.145244219),
             (Timestamp('2012-02-01 00:00:00'), 5.1869643839999995, 2.263444179, 3.145244219),
@@ -362,21 +324,3 @@ def reindex_weights_to_indices_outcome_start_feb():
     ).set_index(0, drop=True)
     
     
-# @pytest.fixture(
-#     (
-#          weights_beginning_jan,
-#          aggregate_indices_3years,
-#          weights_beginning_jan_monthly,
-#          axis=1,),
-#     (),
-#     (),
-#     (),
-# )
-# def reindex_to_weights_combinator(request):
-#     """ """
-#     weights = request.getfixturevalue(request.param[0])
-#     indices = request.getfixturevalue(request.param[1])
-#     outcome = request.getfixturevalue(request.param[2])
-#     axis = request.param[3]
-    
-#     return indices, outcome, weights, axis, ignore_na_values
