@@ -11,7 +11,8 @@ def get_weight_shares(weights, axis=1):
     axis = _handle_axis(axis)
     _check_valid_pandas_arg(weights, 'weights', axis_flip(axis))
     
-    if not weights.sum(axis).round().eq(1).all():
+    # TODO: test precision
+    if not weights.sum(axis).round(5).eq(1).all():
         return weights.div(weights.sum(axis), axis=axis_flip(axis))
     
     else:   # It is already weight shares so return input
