@@ -20,7 +20,6 @@ class AggTestCase:
     weights: str
     outcome: str
     axis: Union[str, int] = 1
-    ignore_na_values: bool = False
 
 
 @pytest.fixture(
@@ -55,7 +54,6 @@ class AggTestCase:
             indices="indices_missing",
             weights="weights_3years",
             outcome="aggregate_outcome_missing",
-            ignore_na_values=True,
         ),
         AggTestCase(
             name="missing_transposed",
@@ -63,7 +61,6 @@ class AggTestCase:
             weights="weights_transposed",
             outcome="aggregate_outcome_missing",
             axis=0,
-            ignore_na_values=True,
         ),
     ],
     ids=lambda v: v.name,
@@ -75,9 +72,8 @@ def aggregate_combinator(request):
     outcome = request.getfixturevalue(request.param.outcome)
 
     axis = request.param.axis
-    ignore_na_values = request.param.ignore_na_values
     
-    return indices, weights, outcome, axis, ignore_na_values
+    return indices, weights, outcome, axis
 
 
 def test_aggregate(aggregate_combinator):
@@ -96,9 +92,9 @@ def test_aggregate(aggregate_combinator):
     # AND the outcome
     # WHEN indices and weights are aggregated together
     # THEN they should equal the outcome
-    indices, weights, outcome, axis, ignore_na_indices = aggregate_combinator
+    indices, weights, outcome, axis = aggregate_combinator
     
-    aggregated = aggregate(indices, weights, axis, ignore_na_indices)
+    aggregated = aggregate(indices, weights, axis)
 
     assert_series_equal(aggregated, outcome, check_names=False)
 
@@ -241,11 +237,11 @@ if __name__ == "__main__":
         ],
     ).set_index(0, drop=True)
     
-    weights.columns = [0, 5, 3]
-    weights = weights['2012']
-    indices = indices['2012-06']
+    # weights.columns = [0, 5, 3]
+    # weights = weights['2012']
+    # indices = indices['2012-06']
     
-    aggregated = aggregate(indices, weights)
+    # aggregated = aggregate(indices, weights)
     
 
     indices2 = pd.DataFrame.from_records(
