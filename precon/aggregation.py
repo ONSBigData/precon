@@ -18,7 +18,7 @@ def aggregate(
         indices: pd.DataFrame,
         weights: Union[pd.DataFrame, pd.Series],
         axis: Axis = 1,
-        ignore_na_indices: Optional[bool] = False) -> pd.Series:
+        ignore_na_indices: Optional[bool] = True) -> pd.Series:
     """
     Aggregate unchained indices with weights to get sum product.
     
@@ -51,7 +51,7 @@ def aggregate(
     
     # Step through by each period to ignore NAs
     if ignore_na_indices:
-        weights[indices.isna() & indices.eq(0)] = 0
+        weights[indices.isna() | indices.eq(0)] = 0
     
 
     weight_shares = get_weight_shares(weights, axis)
