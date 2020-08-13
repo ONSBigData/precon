@@ -7,14 +7,15 @@ from typing import Union
 import numpy as np
 import pandas as pd
 
-from .helpers import axis_slice
+from precon.helpers import axis_slice
 
 def round_and_adjust(
         obj: Union[pd.DataFrame, pd.Series],
         decimals: int,
         axis: int = 0) -> pd.DataFrame:
-    """Rounds a set of values ensuring the rounded values sum to
-    the same total as the unrounded weights.
+    """
+    Rounds a set of values ensuring the rounded values sum to the same
+    total as the unrounded weights.
     
     Parameters
     ----------
