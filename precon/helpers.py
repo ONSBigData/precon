@@ -10,12 +10,10 @@ def reindex_and_fill(df, like_df, first='ffill', axis=0):
     reindexed = df.reindex(like_df.axes[axis], axis=axis)
     
     if first == 'ffill':
-        reindexed_and_filled = reindexed.ffill(axis).bfill(axis)
+        return reindexed.ffill(axis).bfill(axis)
     elif first == 'bfill':
-        reindexed_and_filled = reindexed.bfill(axis).ffill(axis)
+        return reindexed.bfill(axis).ffill(axis)
     
-    return reindexed_and_filled
-
 
 def swap_columns(df, col1, col2):
     """Swaps the two given columns of the DataFrame."""    
