@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import pandas as pd
-from precon.helpers import reindex_and_fill, axis_flip
+from precon.helpers import reindex_and_fill, axis_flip, _get_end_year
 
 def get_weight_shares(weights, axis=1):
     """If not weight shares already, calculates weight shares."""
@@ -30,14 +30,22 @@ def reindex_weights_to_indices(weights, indices, axis=0):
         return weights
 
 
-def reindex_to_update_periods(weights): #TODO - move this to precon
-    """ """
+def reindex_to_update_periods(weights):
+    """Returns only months where weights are updated.
+    
+    Useful for reversing a reindex and fill operation where the weights
+    repeat monthly. Takes Feb values pre 2017 and Jan & Feb values post
+    2017 for the double update.
+    """
+    # TODO: Rewrite using shift
     pre_weights = weights.loc[:'2016']
     post_weights = weights.loc['2017':]
+    
     to_concat = [
-            pre_weights.loc[pre_weights.index.month == 2],
-            post_weights.loc[post_weights.index.month.isin([1, 2])],
+        pre_weights.loc[pre_weights.index.month == 2],
+        post_weights.loc[post_weights.index.month.isin([1, 2])],
     ]
+    
     return pd.concat(to_concat)
 
 
@@ -52,8 +60,8 @@ def jan_adjust_weights(weights, direction='back'):
 def adjust_pre_doublelink(weights, start_year='2017', direction='back'): 
     """Jan adjusts only the weights up to the end year."""
     # Double update (Jan & Feb) starts in 2017
-    adjusted_weights = pd.concat([
-            jan_adjust_weights(weights[:str(int(start_year)-1)], direction),
-            weights[start_year:],
+    return pd.concat([
+        jan_adjust_weights(weights[:_get_end_year(start_year)], direction),
+        weights[start_year:],
     ])
-    return adjusted_weights
+

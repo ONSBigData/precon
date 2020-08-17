@@ -2,15 +2,15 @@
 
 import pandas as pd
 
-def set_ref_period(df, period):
+def set_reference_period(df, period):
     """ A function to re-reference an index series on a given period."""
-    base_mean = df[period].mean() # Mean of values at the base period.
-    reref = df.div(base_mean) * 100 # Normalise
+    base_mean = df[period].mean()
+    re_referenced = df.div(base_mean) * 100
     
     # Fill NaNs from division with zeros
-    reref.fillna(0, inplace=True)
+    re_referenced.fillna(0, inplace=True)
        
-    return reref
+    return re_referenced
 
 
 def set_index_range(df, start=None, end=None):
@@ -62,10 +62,10 @@ def in_year_indices_to_full_index(in_year_indices):
     jan = (full_index.index.month == 1)
     not_first_year = (full_index.index.year != full_index.index[0].year)
     
-    if isinstance(full_index, pd.core.series.Series):
-        equals_100 = full_index == 100
-    elif isinstance(full_index, pd.core.frame.DataFrame):
-        equals_100 = (full_index == 100).any(axis=1)
+    equals_100 = full_index == 100
+    
+    if isinstance(full_index, pd.DataFrame):
+        equals_100 = equals_100.any(axis=1)
     
     duplicate_months = (jan & not_first_year & equals_100)
     
