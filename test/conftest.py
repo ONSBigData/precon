@@ -64,7 +64,7 @@ def weights_3years():
 
 @pytest.fixture()
 def weights_3years_start_feb(weights_3years):
-    return weights_3years.tshift(1, freq='MS')
+    return weights_3years.shift(1, freq='MS')
 
 
 @pytest.fixture()
@@ -80,7 +80,7 @@ def weight_shares_3years():
 
 @pytest.fixture()
 def weights_shares_start_feb(weight_shares_3years):
-    return weight_shares_3years.tshift(1, freq='MS')
+    return weight_shares_3years.shift(1, freq='MS')
 
 
 @pytest.fixture()
