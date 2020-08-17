@@ -21,7 +21,7 @@ def round_and_adjust(
     ----------
     obj: Object with values to adjust.
     decimals : Number of decimal places to round each column to.
-    axis : The axis to adjust on and preserve total.
+    axis : Axis to adjust on and preserve total.
         
     Returns
     -------
@@ -80,8 +80,7 @@ def _get_values_to_adjust(values, decimals, no_of_adjustments):
     asc = True if np.sign(no_of_adjustments) == -1 else False
 
     diff_ranked = (
-        values
-        .subtract(values.round(decimals))
+        values.subtract(values.round(decimals))
         .sort_values(ascending=asc)
     )
 
