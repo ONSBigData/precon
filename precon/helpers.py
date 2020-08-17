@@ -64,11 +64,7 @@ def map_headings(df, labels, map_from, map_to):
 
 def axis_slice(value, axis):
     """Creates a slice for pandas indexing along given axis."""    
-    if axis == 0:
-        return (value, slice(None))
-    
-    elif axis == 1:
-        return (slice(None), value)
+    return {0: (value, slice(None)), 1: (slice(None), value)}.get(axis)
 
 
 def axis_flip(axis):
