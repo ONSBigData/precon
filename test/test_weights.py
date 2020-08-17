@@ -3,10 +3,10 @@ Tests for `weights` module.
 """
 import numpy as np
 import pandas as pd
-import pytest
+
 from pandas import Timestamp
 from precon import get_weight_shares, reindex_weights_to_indices
-from pandas._testing import assert_frame_equal, assert_series_equal
+from pandas.testing import assert_frame_equal
 
 
 def test_get_weight_shares_with_weight_shares(weight_shares_3years):
