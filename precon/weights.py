@@ -1,25 +1,32 @@
 # -*- coding: utf-8 -*-
 
 import pandas as pd
-from precon.helpers import reindex_and_fill, axis_flip, _get_end_year
 
+from precon.helpers import reindex_and_fill, axis_flip, _get_end_year
+from precon._error_handling import _handle_axis, _check_valid_pandas_arg
+from precon.validation import validate_args
+
+
+# @validate_args
 def get_weight_shares(weights, axis=1):
     """If not weight shares already, calculates weight shares."""
-    if isinstance(weights, pd.core.frame.Series):
-        weights = weights.to_frame()
-        
-    if not weights.sum(axis).round().eq(1).all():
+    axis = _handle_axis(axis)
+    _check_valid_pandas_arg(weights, 'weights', axis_flip(axis))
+    
+    # TODO: test precision
+    if not weights.sum(axis).round(5).eq(1).all():
         return weights.div(weights.sum(axis), axis=axis_flip(axis))
     
     else:   # It is already weight shares so return input
         return weights
 
-
+# @validate_args
 def reindex_weights_to_indices(weights, indices, axis=0):
     """If not already indexed like indices, reindexes weights."""
-    if isinstance(weights, pd.core.frame.Series):
-        weights = weights.to_frame()
-        
+    axis = _handle_axis(axis)
+    _check_valid_pandas_arg(weights, 'weights', axis)
+    _check_valid_pandas_arg(weights, 'indices', axis)
+    
     if not weights.axes[axis].isin(indices.axes[axis]).all():
         raise Exception("Weights index values are not present in indices "
                         "index so can't be reindexed.")

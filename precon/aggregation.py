@@ -1,24 +1,56 @@
 """
 Common aggregation functions.    
 """
+from typing import Union, Optional
+
 import pandas as pd
 
 from precon.weights import get_weight_shares, reindex_weights_to_indices
 from precon.helpers import reduce_cols, axis_flip
+from precon._error_handling import _check_valid_pandas_arg
+from precon._error_handling import _assert_equal_axis_labels
+from precon._error_handling import _handle_axis
 
+PandasObj = Union[pd.DataFrame, pd.Series]
+Axis = Union[int, str]
 
-def aggregate(indices, weights, axis=1):
+def aggregate(
+        indices: pd.DataFrame,
+        weights: Union[pd.DataFrame, pd.Series],
+        axis: Axis = 1,
+        ) -> pd.Series:
     """
-    Takes a set of unchained indices and corresponding weights with matching
-    time series index, and produces the weighted aggregate unchained index.
+    Aggregate unchained indices with weights to get sum product.
+    
+    Parameters
+    ----------
+    axis : {0 or ‘index’, 1 or ‘columns’}, default 1
+        Axis along which the function is applied:
+            * 0 or ‘index’: apply function to each column.
+            * 1 or ‘columns’: apply function to each row.
     """
-    weight_shares = get_weight_shares(weights, axis)
-    weight_shares = reindex_weights_to_indices(
-        weight_shares,
+    axis = _handle_axis(axis)    
+    
+    if isinstance(weights, pd.core.series.Series):
+        weights = weights.to_frame()
+        if axis == 1:
+            weights = weights.T
+    
+    _check_valid_pandas_arg(indices, 'indices', axis_flip(axis))
+    _check_valid_pandas_arg(weights, 'weights', axis_flip(axis))
+    
+    _assert_equal_axis_labels(indices, weights, axis)
+
+    weights = reindex_weights_to_indices(
+        weights,
         indices,
-        axis_flip(axis)
+        axis_flip(axis),
     )
     
+    # Ensure zero or NA indices have zero weight
+    weights[indices.isna() | indices.eq(0)] = 0
+    
+    weight_shares = get_weight_shares(weights, axis)
     return indices.mul(weight_shares).sum(axis=axis)
 
 
