@@ -17,13 +17,13 @@ def calculate_index(
     """Calculates the index according to weights or methods parameters
     using given prices and base_prices.
     """        
-    indices = prices.div(base_prices).mul(100)
+    indices = prices.div(base_prices) * 100
     
     if weights is not None:
         return aggregate(indices, weights, axis)
     
     elif method == "dutot":
-        return prices.mean(axis).div(base_prices.mean(axis)).mul(100)
+        return prices.mean(axis).div(base_prices.mean(axis)) * 100
     
     elif method == "carli":
         return indices.mean(axis)
