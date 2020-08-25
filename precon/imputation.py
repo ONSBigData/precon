@@ -37,13 +37,7 @@ def base_price_imputation(
     # "T" markers to NA
     # to_impute = non_comparables | (markers == 'T')
     # Get the max times to impute for any year.
-    times_to_impute = int((
-        non_comparables
-        .any(axis^1)
-        .replace(True, 1)
-        .resample('A').sum()
-        .max()
-    ))
+    times_to_impute = get_annual_max_count(non_comparables, axis^1)
     
     for _ in range(times_to_impute):
         base_prices_filled = base_prices.ffill(axis)
@@ -89,3 +83,8 @@ def get_quality_adjusted_prices(prices, base_prices, adjustments, axis=1):
     adjustment_factor = prices.div(prices-adjustments)
 
     return base_prices * adjustment_factor.cumprod(axis)
+
+
+def get_annual_max_count(df, axis):
+    """Counts values present in each year, returns max."""
+    return int(df.any(axis).replace(True, 1).resample('A').sum().max())
