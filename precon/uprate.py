@@ -6,8 +6,6 @@ A set of functions for price uprating.
         given base month.
 """
 
-import pandas as pd
-
 def uprate(expenditures, indices, base_month, method=None):
     """
     Returns uprated expenditures given indices and base month.
@@ -60,7 +58,7 @@ def get_uprating_factor(indices, base_month, method=None):
     if base_month not in [1, 12]:
         raise ValueError(
             "Base month can currently only be 1 or 12. If you need "
-            "other base months raise an new feature request.")
+            "other base months raise a new feature request.")
         
     annual_mean = indices.resample('AS').mean()
     month_values = indices[indices.index.month == base_month]

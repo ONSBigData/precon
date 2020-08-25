@@ -2,7 +2,7 @@
 Functions for special rounding methods. Includes function to round
 and adjust weights to keep the sum of weights the same.
 """
-
+import numpy as np
 import pandas as pd
 
 def jan_adjustment(indices, direction='forward'):
