@@ -17,13 +17,13 @@ def calculate_index(
     """Calculates the index according to weights or methods parameters
     using given prices and base_prices.
     """        
-    indices = prices / base_prices * 100
+    indices = prices.div(base_prices).mul(100)
     
     if weights is not None:
         return aggregate(indices, weights, axis)
     
     elif method == "dutot":
-        return prices.mean(axis) / base_prices.mean(axis) * 100  
+        return prices.mean(axis).div(base_prices.mean(axis)).mul(100)
     
     elif method == "carli":
         return indices.mean(axis)
@@ -35,6 +35,6 @@ def calculate_index(
 def geo_mean(indices: pd.Dataframe, axis: int = 1) -> pd.DataFrame:
     """Calculates the geometric mean, accounting for missing values."""
     if isinstance(indices, pd.DataFrame):
-        return np.exp(np.log(indices.prod(axis))/indices.notna().sum(axis))
+        return np.exp(np.log(indices.prod(axis)) / indices.notna().sum(axis))
     else:
-        return np.exp(np.log(indices.prod())/indices.notna().sum())
+        return np.exp(np.log(indices.prod()) / indices.notna().sum())
