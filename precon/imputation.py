@@ -5,6 +5,7 @@ import numpy as np
 import pandas as pd
 
 from precon.index_methods import calculate_index
+from precon.helpers import in_year_fill
 
 def base_price_imputation(
         prices,
@@ -79,6 +80,92 @@ def get_quality_adjusted_prices(prices, base_prices, adjustments, axis=1):
     adjustment_factor = prices.div(prices-adjustments)
 
     return base_prices * adjustment_factor.cumprod(axis)
+
+
+def impute_using_previous_index_value(
+        base_prices: pd.DataFrame,
+        to_impute: pd.DataFrame,
+        prices: pd.DataFrame,
+        weights: pd.DataFrame,
+        method: str,
+        axis: int,
+        ) -> pd.DataFrame:
+    """
+    Imputes base prices using the index value from the previous period
+
+    Parameters
+    ==========
+    base_prices: Unfilled base prices that only contain values where
+        the base price changes
+
+    to_impute: A boolean mask for values to impute
+
+    prices: The price quotes observed
+
+    weights: The weights for each price quote
+
+    method: The index method used
+
+    axis: The axis that is a time series
+    """
+    base_prices_filled = base_prices.ffill(axis)
+
+    index = calculate_index(
+        prices,
+        base_prices_filled,
+        weights=weights,
+        method=method,
+        axis=axis^1,
+    )
+
+    return prices.div(index.shift(1), axis) * 100
+
+
+def impute_using_non_comparable_index(
+        base_prices: pd.DataFrame,
+        to_impute: pd.DataFrame,
+        prices: pd.DataFrame,
+        weights: pd.DataFrame,
+        method: str,
+        axis: int,
+        ) -> pd.DataFrame:
+    """
+    Imputes base prices using an index calculated by excluding the
+    values to impute
+
+    This method is typically used for items marked as non-comparable
+    but works for any values marked in the `to_impute` argument
+
+    Parameters
+    ==========
+    base_prices: Unfilled base prices that only contain values where
+        the base price changes
+
+    to_impute: A boolean mask for values to impute
+
+    prices: The price quotes observed
+
+    weights: The weights for each price quote
+
+    method: The index method used
+
+    axis: The axis that is a time series
+    """
+    base_prices_filled = base_prices.ffill(axis)
+    # Set base prices to impute as NaN so they are excluded from calc
+    base_prices_filled = base_prices_filled.mask(to_impute, np.nan)
+
+    # Create an index and use to impute non-comparables
+    index_excl_nc = calculate_index(
+        prices,
+        base_prices_filled,
+        weights=weights,
+        method=method,
+        axis=axis^1,
+    )
+
+    return prices.div(index_excl_nc, axis) * 100
+
 
 
 def get_annual_max_count(df, axis):
