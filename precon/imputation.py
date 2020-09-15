@@ -9,52 +9,48 @@ from precon.index_methods import calculate_index
 def base_price_imputation(
         prices,
         markers,
+        impute_methods,
         base_month=1,
         axis=1, 
         weights=None,
-        method=None,
+        index_method=None,
         adjustments=None,
         ):
     """Impute the prices marked non-comparable using the index excl.
     non-comparables.
-    """
-    non_comparables = markers == 'N'
+    """   
     base_prices = get_base_prices(prices, base_month, axis=axis, ffill=False)
-    
+        
     # Apply quality adjustment if adjustments arg given
     if adjustments is not None:
         base_prices_filled = base_prices.ffill(axis)
         to_adjust = adjustments.ne(0)
-        
+
         base_prices[to_adjust] = get_quality_adjusted_prices(
             prices,
             base_prices_filled,
             adjustments,
             axis,
         )
-    
+
     # Fill forward the base prices but set non-comparables and
     # "T" markers to NA
     # to_impute = non_comparables | (markers == 'T')
     # Get the max times to impute for any year.
-    times_to_impute = get_annual_max_count(non_comparables, axis^1)
-    
+    to_impute = markers.isin(impute_methods.keys())
+    times_to_impute = get_annual_max_count(to_impute, axis^1)
+
     for _ in range(times_to_impute):
-        base_prices_filled = base_prices.ffill(axis)
-        base_prices_filled[non_comparables] = np.nan
-        
-        # Create an index and use to impute non-comparables
-        index_excl_nc = calculate_index(
-            prices,
-            base_prices_filled,
-            weights=weights,
-            method=method,
-            axis=axis^1,
-        )
+        for ind, method in impute_methods.items():
+            to_impute = markers == ind
+            base_prices[to_impute] = method(
+                base_prices, to_impute, prices, weights, index_method, axis,
+            )
     
-        base_prices[non_comparables] = prices.div(index_excl_nc, axis) * 100
-  
-    return base_prices.ffill(axis)
+    base_prices = in_year_fill(base_prices, axis, method='ffill')
+
+    # Shift the base prices onto Feb-Jan+1 then bfill first month
+    return base_prices.shift(1, axis=axis)
 
 
 def get_base_prices(prices, base_month=1, axis=0, ffill=True):
@@ -86,5 +82,5 @@ def get_quality_adjusted_prices(prices, base_prices, adjustments, axis=1):
 
 
 def get_annual_max_count(df, axis):
-    """Counts values present in each year, returns max."""
+    """Counts values present in each year for df, returns max."""
     return int(df.any(axis).replace(True, 1).resample('A').sum().max())

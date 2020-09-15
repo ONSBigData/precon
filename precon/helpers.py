@@ -33,7 +33,19 @@ def reindex_and_fill(df, other, first='ffill', axis=0):
         return reindexed.ffill(axis).bfill(axis)
     elif first == 'bfill':
         return reindexed.bfill(axis).ffill(axis)
+
     
+def in_year_fill(df, axis, method='ffill'):
+    """Fills for each yearly slice of the df using the given method."""
+    df_out = df.copy()
+    df_filled = df.fillna(method=method, axis=axis)
+    
+    for year in df.axes[axis].year.unique():
+        slice_ = axis_slice(slice(str(year)), axis)
+        df_out.loc[slice_] = df_filled
+    
+    return df_out
+
 
 def swap_columns(df, col1, col2):
     """Swaps the two given columns of the DataFrame."""    
