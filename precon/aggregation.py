@@ -1,7 +1,7 @@
 """
 Common aggregation functions.    
 """
-from typing import Union, Optional
+from typing import Union
 
 import numpy as np
 import pandas as pd
@@ -34,8 +34,8 @@ def aggregate(
     axis = _handle_axis(axis)    
     
     methods_lib = {
-        'mean': mean_aggregate,
-        'geomean': geo_mean_aggregate,
+        'mean': _mean_aggregate,
+        'geomean': _geo_mean_aggregate,
     }
     agg_method = methods_lib.get(method)
     
@@ -63,11 +63,13 @@ def aggregate(
     return agg_method(indices, weight_shares, axis)
 
 
-def mean_aggregate(indices, weight_shares, axis):
+def _mean_aggregate(indices, weight_shares, axis):
+    """Aggregates indices and weight shares using sum product."""
     return indices.mul(weight_shares).sum(axis=axis)
   
     
-def geo_mean_aggregate(indices, weight_shares, axis):
+def _geo_mean_aggregate(indices, weight_shares, axis):
+    """Aggregates indices and weight shares using geo mean method."""
     return np.exp(np.log(indices).mul(weight_shares).sum(axis=axis))
 
 
