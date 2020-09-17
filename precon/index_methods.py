@@ -22,9 +22,10 @@ def calculate_index(
     if weights is not None:
         
         if method == "jevons":
-            indices = geo_aggregate(price_relatives, weights, axis)
+            indices = aggregate(price_relatives, weights, 'geomean', axis)
         
         else:
+            # "laspeyres"?
             indices = aggregate(price_relatives, weights, axis)
 
     elif method == "dutot":

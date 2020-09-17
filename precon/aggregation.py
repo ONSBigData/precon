@@ -3,6 +3,7 @@ Common aggregation functions.
 """
 from typing import Union, Optional
 
+import numpy as np
 import pandas as pd
 
 from precon.weights import get_weight_shares, reindex_weights_to_indices
@@ -17,6 +18,7 @@ Axis = Union[int, str]
 def aggregate(
         indices: pd.DataFrame,
         weights: Union[pd.DataFrame, pd.Series],
+        method: str = 'mean',
         axis: Axis = 1,
         ) -> pd.Series:
     """
@@ -30,6 +32,13 @@ def aggregate(
             * 1 or ‘columns’: apply function to each row.
     """
     axis = _handle_axis(axis)    
+    
+    methods_lib = {
+        'mean': mean_aggregate,
+        'geomean': geo_mean_aggregate,
+    }
+    agg_method = methods_lib.get(method)
+    
     
     if isinstance(weights, pd.core.series.Series):
         weights = weights.to_frame()
@@ -51,7 +60,15 @@ def aggregate(
     weights = weights.mask(indices.isna() | indices.eq(0), 0)
     
     weight_shares = get_weight_shares(weights, axis)
+    return agg_method(indices, weight_shares, axis)
+
+
+def mean_aggregate(indices, weight_shares, axis):
     return indices.mul(weight_shares).sum(axis=axis)
+  
+    
+def geo_mean_aggregate(indices, weight_shares, axis):
+    return np.exp(np.log(indices).mul(weight_shares).sum(axis=axis))
 
 
 def reaggregate_index(indices, weights, subs):
