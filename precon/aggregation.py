@@ -48,7 +48,7 @@ def aggregate(
     )
     
     # Ensure zero or NA indices have zero weight
-    weights[indices.isna() | indices.eq(0)] = 0
+    weights = weights.mask(indices.isna() | indices.eq(0), 0)
     
     weight_shares = get_weight_shares(weights, axis)
     return indices.mul(weight_shares).sum(axis=axis)
