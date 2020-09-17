@@ -17,19 +17,26 @@ def calculate_index(
     """Calculates the index according to weights or methods parameters
     using given prices and base_prices.
     """        
-    indices = prices.div(base_prices) * 100
-    
+    price_relatives = prices.div(base_prices)
+
     if weights is not None:
-        return aggregate(indices, weights, axis)
-    
+        
+        if method == "jevons":
+            indices = geo_aggregate(price_relatives, weights, axis)
+        
+        else:
+            indices = aggregate(price_relatives, weights, axis)
+
     elif method == "dutot":
-        return prices.mean(axis).div(base_prices.mean(axis)) * 100
-    
+        indices = prices.mean(axis).div(base_prices.mean(axis))
+
     elif method == "carli":
-        return indices.mean(axis)
-    
+        indices = price_relatives.mean(axis)
+
     elif method == "jevons":
-        return geo_mean(indices, axis=axis)
+        indices = geo_mean(price_relatives, axis=axis)
+        
+    return indices * 100
     
 
 def geo_mean(indices: pd.DataFrame, axis: int = 1) -> pd.DataFrame:
