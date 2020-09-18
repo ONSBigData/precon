@@ -1,7 +1,7 @@
 """
 A set of functions for imputation methods.
 """
-from typing import Dict, Callable
+from typing import Dict, Callable, Optional, Union
 
 import numpy as np
 import pandas as pd
@@ -9,15 +9,21 @@ import pandas as pd
 from precon.index_methods import calculate_index
 from precon.helpers import in_year_fill
 
+ImputationCallable = Callable[
+    [pd.DataFrame, pd.DataFrame, pd.DataFrame, str, int], pd.DataFrame
+]
+ImputationMethods = Union[ImputationCallable, Dict[str, ImputationCallable]]
+
 def base_price_imputation(
         prices: pd.DataFrame,
-        markers: pd.DataFrame,
-        impute_methods: Dict[str, Callable],
+        imputation_markers: pd.DataFrame,
+        impute_method: Optional[ImputationMethods] = None,
         base_period: int = 1,
         axis: int = 1, 
-        weights: pd.DataFrame = None,
+        weights: Optional[pd.DataFrame] = None,
+        # TODO: make index_method an Enum
         index_method: str = None,
-        adjustments: pd.DataFrame = None,
+        adjustments: Optional[pd.DataFrame] = None,
         ) -> pd.DataFrame:
     """
     Selects base prices for the base period and performs base price
@@ -32,6 +38,10 @@ def base_price_imputation(
     is used for imputation is calculated. The `adjustments` parameter
     is used to optionally pass in quality adjustments.
     """   
+    # Set the default imputation method if none provided.
+    if impute_method is None:
+        impute_method = impute_using_index
+    
     base_prices = get_base_prices(prices, base_period, axis=axis, ffill=False)
 
     # Apply quality adjustment if adjustments arg given.
@@ -47,17 +57,29 @@ def base_price_imputation(
         )
 
     # Get the max times to impute for any year.
-    all_imputes = markers.isin(impute_methods.keys())
-    times_to_impute = get_annual_max_count(all_imputes, axis^1)
+    if imputation_markers.dtypes.all() == np.dtype('bool'):
+        imputations = imputation_markers
+    else:
+        # Convert to bool if not already.
+        imputations = imputation_markers.notna()
+
+    times_to_impute = get_annual_max_count(imputations, axis^1)
     
     # Repeat the base price imputation for the number of imputations
-    # needed, and for each indicator-method combination
+    # needed, and for each indicator-method combination.
     for _ in range(times_to_impute):
-        for indicator, method in impute_methods.items():
-            to_impute = markers == indicator
-            
-            base_prices[to_impute] = method(
-                base_prices, to_impute, prices, weights, index_method, axis,
+        # If a dict of impute methods is provided, loop through and 
+        # apply the method for each response indicator.
+        if isinstance(impute_method, dict):
+            for indicator, method in impute_method.items():
+                to_impute = imputation_markers == indicator
+                base_prices[to_impute] = method(
+                    base_prices, prices, weights, index_method, axis,
+                )
+                
+        else:
+            base_prices[imputations] = impute_method(
+                    base_prices, prices, weights, index_method, axis,
             )
     
     # Using in_year_fill prevents discontinued prices filling beyond
@@ -96,9 +118,8 @@ def get_quality_adjusted_prices(prices, base_prices, adjustments, axis=1):
     return base_prices * adjustment_factor.cumprod(axis)
 
 
-def impute_using_previous_index_value(
+def impute_using_index(
         base_prices: pd.DataFrame,
-        to_impute: pd.DataFrame,
         prices: pd.DataFrame,
         weights: pd.DataFrame,
         method: str,
@@ -132,53 +153,7 @@ def impute_using_previous_index_value(
         axis=axis^1,
     )
 
-    return prices.div(index.shift(1), axis) * 100
-
-
-def impute_using_non_comparable_index(
-        base_prices: pd.DataFrame,
-        to_impute: pd.DataFrame,
-        prices: pd.DataFrame,
-        weights: pd.DataFrame,
-        method: str,
-        axis: int,
-        ) -> pd.DataFrame:
-    """
-    Imputes base prices using an index calculated by excluding the
-    values to impute
-
-    This method is typically used for items marked as non-comparable
-    but works for any values marked in the `to_impute` argument
-
-    Parameters
-    ==========
-    base_prices: Unfilled base prices that only contain values where
-        the base price changes
-
-    to_impute: A boolean mask for values to impute
-
-    prices: The price quotes observed
-
-    weights: The weights for each price quote
-
-    method: The index method used
-
-    axis: The axis that is a time series
-    """
-    base_prices_filled = base_prices.ffill(axis)
-    # Set base prices to impute as NaN so they are excluded from calc
-    base_prices_filled = base_prices_filled.mask(to_impute, np.nan)
-
-    # Create an index and use to impute non-comparables
-    index_excl_nc = calculate_index(
-        prices,
-        base_prices_filled,
-        weights=weights,
-        method=method,
-        axis=axis^1,
-    )
-
-    return prices.div(index_excl_nc, axis) * 100
+    return prices.div(index, axis) * 100
 
 
 def get_annual_max_count(df, axis):
