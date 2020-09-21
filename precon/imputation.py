@@ -1,7 +1,7 @@
 """
 A set of functions for imputation methods.
 """
-from typing import Dict, Callable, Optional, Union
+from typing import Optional
 
 import numpy as np
 import pandas as pd
@@ -10,15 +10,11 @@ from precon.index_methods import calculate_index
 from precon.helpers import period_window_fill
 from precon.weights import reindex_weights_to_indices
 
-ImputationCallable = Callable[
-    [pd.DataFrame, pd.DataFrame, pd.DataFrame, str, int], pd.DataFrame
-]
-ImputationMethods = Union[ImputationCallable, Dict[str, ImputationCallable]]
 
 def base_price_imputation(
         prices: pd.DataFrame,
         to_impute: pd.DataFrame,
-        shift: bool = True,
+        shift_imputed_values: bool = True,
         base_period: int = 1,
         axis: int = 1, 
         weights: Optional[pd.DataFrame] = None,
@@ -47,7 +43,7 @@ def base_price_imputation(
     start_prices = get_base_prices(prices, base_period, axis=axis, ffill=False)
     base_prices = start_prices.copy()
     
-    if not shift:
+    if not shift_imputed_values:
         base_prices = base_prices.shift(1, axis=axis)
 
     # Apply quality adjustment if adjustments arg given.
@@ -71,6 +67,8 @@ def base_price_imputation(
 
         base_prices_filled = base_prices.ffill(axis)
 
+        # If no weights, set base_prices where imputation occurs to NA
+        # to get the index excluding those values for imputing
         if weights is None:
             base_prices_filled[to_impute] = np.nan
 
@@ -85,7 +83,6 @@ def base_price_imputation(
         imputed_values = prices.div(index, axis) * 100
         base_prices = base_prices.mask(to_impute, imputed_values)
     
-    
     # Using period_window_fill prevents discontinued prices filling
     # beyond the year that they are discontinued
     base_prices = period_window_fill(
@@ -93,7 +90,7 @@ def base_price_imputation(
         axis=axis, method='ffill',
     )
     
-    if shift:
+    if shift_imputed_values:
         # Shift the base prices onto Feb-Jan+1
         base_prices = base_prices.shift(1, axis=axis)
     
