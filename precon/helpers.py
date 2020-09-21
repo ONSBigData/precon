@@ -35,15 +35,29 @@ def reindex_and_fill(df, other, first='ffill', axis=0):
         return reindexed.bfill(axis).ffill(axis)
 
     
-def in_year_fill(df, axis, method='ffill'):
-    """Fills for each yearly slice of the df using the given method."""
+def period_window_fill(
+        df,
+        periods=12,
+        freq='MS',
+        method='ffill',
+        shift_window=0,
+        axis=1
+        ):
+    """Fills NA values in the DataFrame using a rolling period window
+    """
     df_out = df.copy()
-    df_filled = df.fillna(method=method, axis=axis)
+
+    starts = df.axes[axis][::periods-1].shift(shift_window, freq=freq)
+    ends = starts.shift(periods-1, freq=freq)
     
-    for year in df.axes[axis].year.unique():
-        slice_ = axis_slice(slice(str(year)), axis)
-        df_out.loc[slice_] = df_filled
+    period_windows = [slice(start, end) for start, end in zip(starts, ends)]
     
+    for window in period_windows:
+        slice_ = axis_slice(window, axis)
+        df_out.loc[slice_] = df_out.loc[slice_].fillna(
+            method=method, axis=axis
+        )
+        
     return df_out
 
 
