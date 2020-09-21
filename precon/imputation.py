@@ -11,7 +11,7 @@ from precon.helpers import period_window_fill
 from precon.weights import reindex_weights_to_indices
 
 
-def base_price_imputation(
+def impute_base_prices(
         prices: pd.DataFrame,
         to_impute: pd.DataFrame,
         shift_imputed_values: bool = True,
