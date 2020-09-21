@@ -15,7 +15,7 @@ def calculate_index(
         axis: int = 1,
         ) -> pd.DataFrame:
     """Calculates the index according to weights or methods parameters
-    using given prices and base_prices.
+    using given prices and base prices.
     """        
     price_relatives = prices.div(base_prices)
 
