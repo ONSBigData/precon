@@ -130,3 +130,28 @@ def _get_end_year(start_year):
     """Returns the string of the previous year given the start year."""
     return str(int(start_year)-1)
 
+
+def index_attrs_as_frame(df, attr=None, axis=0):
+    """ 
+    Returns a DataFrame of index attributes (or values if not
+    specified), the same shape as the given DataFrame.
+    
+    # TODO: Get this working for case where axis = 0 and attr = None
+    """
+    if attr:
+        vals = getattr(df.axes[axis], attr).values
+    else:
+        vals = df.axes[axis].values
+    
+    # Create an axis slice so attrs can be cast to any axis
+    if axis == 0:
+        slice_ = axis_slice(None, axis^1)
+        vals = vals[slice_]
+    
+    # Create an empty DataFrame in original shape for casting
+    all_attrs = pd.DataFrame().reindex_like(df)
+    
+    all_attrs.loc[:, :] = vals
+    
+    # Return with the original attribute dtype
+    return all_attrs.astype(vals.dtype)
