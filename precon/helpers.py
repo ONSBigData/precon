@@ -33,7 +33,33 @@ def reindex_and_fill(df, other, first='ffill', axis=0):
         return reindexed.ffill(axis).bfill(axis)
     elif first == 'bfill':
         return reindexed.bfill(axis).ffill(axis)
+
     
+def period_window_fill(
+        df,
+        periods=12,
+        freq='MS',
+        method='ffill',
+        shift_window=0,
+        axis=1
+        ):
+    """Fills NA values in the DataFrame using a rolling period window
+    """
+    df_out = df.copy()
+
+    starts = df.axes[axis][::periods-1].shift(shift_window, freq=freq)
+    ends = starts.shift(periods-1, freq=freq)
+    
+    period_windows = [slice(start, end) for start, end in zip(starts, ends)]
+    
+    for window in period_windows:
+        slice_ = axis_slice(window, axis)
+        df_out.loc[slice_] = df_out.loc[slice_].fillna(
+            method=method, axis=axis
+        )
+        
+    return df_out
+
 
 def swap_columns(df, col1, col2):
     """Swaps the two given columns of the DataFrame."""    
@@ -104,3 +130,28 @@ def _get_end_year(start_year):
     """Returns the string of the previous year given the start year."""
     return str(int(start_year)-1)
 
+
+def index_attrs_as_frame(df, attr=None, axis=0):
+    """ 
+    Returns a DataFrame of index attributes (or values if not
+    specified), the same shape as the given DataFrame.
+    
+    # TODO: Get this working for case where axis = 0 and attr = None
+    """
+    if attr:
+        vals = getattr(df.axes[axis], attr).values
+    else:
+        vals = df.axes[axis].values
+    
+    # Create an axis slice so attrs can be cast to any axis
+    if axis == 0:
+        slice_ = axis_slice(None, axis^1)
+        vals = vals[slice_]
+    
+    # Create an empty DataFrame in original shape for casting
+    all_attrs = pd.DataFrame().reindex_like(df)
+    
+    all_attrs.loc[:, :] = vals
+    
+    # Return with the original attribute dtype
+    return all_attrs.astype(vals.dtype)

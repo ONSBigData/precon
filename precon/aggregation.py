@@ -1,8 +1,9 @@
 """
 Common aggregation functions.    
 """
-from typing import Union, Optional
+from typing import Union
 
+import numpy as np
 import pandas as pd
 
 from precon.weights import get_weight_shares, reindex_weights_to_indices
@@ -17,6 +18,7 @@ Axis = Union[int, str]
 def aggregate(
         indices: pd.DataFrame,
         weights: Union[pd.DataFrame, pd.Series],
+        method: str = 'mean',
         axis: Axis = 1,
         ) -> pd.Series:
     """
@@ -30,6 +32,13 @@ def aggregate(
             * 1 or ‘columns’: apply function to each row.
     """
     axis = _handle_axis(axis)    
+    
+    methods_lib = {
+        'mean': _mean_aggregate,
+        'geomean': _geo_mean_aggregate,
+    }
+    agg_method = methods_lib.get(method)
+    
     
     if isinstance(weights, pd.core.series.Series):
         weights = weights.to_frame()
@@ -48,10 +57,25 @@ def aggregate(
     )
     
     # Ensure zero or NA indices have zero weight
-    weights[indices.isna() | indices.eq(0)] = 0
+    weights = weights.mask(indices.isna() | indices.eq(0), 0)
     
     weight_shares = get_weight_shares(weights, axis)
-    return indices.mul(weight_shares).sum(axis=axis)
+    return agg_method(indices, weight_shares, axis)
+
+
+def _mean_aggregate(indices, weight_shares, axis):
+    """Aggregates indices and weight shares using sum product."""
+    return indices.mul(weight_shares).sum(axis=axis, min_count=1)
+  
+    
+def _geo_mean_aggregate(indices, weight_shares, axis):
+    """Aggregates indices and weight shares using geo mean method."""
+    return (
+        np.exp(
+            np.log(indices).mul(weight_shares)
+            .sum(axis=axis, min_count=1)
+        )
+    )
 
 
 def reaggregate_index(indices, weights, subs):
