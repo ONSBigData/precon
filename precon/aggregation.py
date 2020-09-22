@@ -65,12 +65,17 @@ def aggregate(
 
 def _mean_aggregate(indices, weight_shares, axis):
     """Aggregates indices and weight shares using sum product."""
-    return indices.mul(weight_shares).sum(axis=axis)
+    return indices.mul(weight_shares).sum(axis=axis, min_count=1)
   
     
 def _geo_mean_aggregate(indices, weight_shares, axis):
     """Aggregates indices and weight shares using geo mean method."""
-    return np.exp(np.log(indices).mul(weight_shares).sum(axis=axis))
+    return (
+        np.exp(
+            np.log(indices).mul(weight_shares)
+            .sum(axis=axis, min_count=1)
+        )
+    )
 
 
 def reaggregate_index(indices, weights, subs):
