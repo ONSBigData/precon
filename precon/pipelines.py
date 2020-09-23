@@ -2,6 +2,7 @@
 
 from precon.imputation import impute_base_prices, get_base_prices
 from precon.index_methods import calculate_index
+from precon.helpers import flip
 
 def apply_index_calculations(
         prices,
@@ -54,5 +55,5 @@ def apply_index_calculations(
         base_prices,
         weights=weights,
         method=index_method,
-        axis=axis^1,
+        axis=flip(axis),
     )

@@ -145,7 +145,7 @@ def index_attrs_as_frame(df, attr=None, axis=0):
     
     # Create an axis slice so attrs can be cast to any axis
     if axis == 0:
-        slice_ = axis_slice(None, axis^1)
+        slice_ = axis_slice(None, flip(axis))
         vals = vals[slice_]
     
     # Create an empty DataFrame in original shape for casting
