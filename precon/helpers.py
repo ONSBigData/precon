@@ -113,7 +113,7 @@ def axis_slice(value, axis):
     return {0: (value, slice(None)), 1: (slice(None), value)}.get(axis)
 
 
-def axis_flip(axis):
+def flip(axis):
     """Returns the opposite axis value to the one passed."""
     return axis ^ 1
 

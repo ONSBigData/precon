@@ -7,7 +7,7 @@ import numpy as np
 import pandas as pd
 
 from precon.weights import get_weight_shares, reindex_weights_to_indices
-from precon.helpers import reduce_cols, axis_flip
+from precon.helpers import reduce_cols, flip
 from precon._error_handling import _check_valid_pandas_arg
 from precon._error_handling import _assert_equal_axis_labels
 from precon._error_handling import _handle_axis
@@ -45,15 +45,15 @@ def aggregate(
         if axis == 1:
             weights = weights.T
     
-    _check_valid_pandas_arg(indices, 'indices', axis_flip(axis))
-    _check_valid_pandas_arg(weights, 'weights', axis_flip(axis))
+    _check_valid_pandas_arg(indices, 'indices', flip(axis))
+    _check_valid_pandas_arg(weights, 'weights', flip(axis))
     
     _assert_equal_axis_labels(indices, weights, axis)
 
     weights = reindex_weights_to_indices(
         weights,
         indices,
-        axis_flip(axis),
+        flip(axis),
     )
     
     # Ensure zero or NA indices have zero weight
