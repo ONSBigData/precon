@@ -8,7 +8,7 @@ import inspect
 import functools
 
 from precon._error_handling import _handle_axis, _check_valid_pandas_arg
-from precon.helpers import axis_flip
+from precon.helpers import flip
 
 def get_func_defaults(func):
     """ """
@@ -33,7 +33,7 @@ def validate_args(func):
         ]
         
         for i, arg in enumerate(args):
-            _check_valid_pandas_arg(arg, arg_names[i], axis_flip(kwargs['axis']))
+            _check_valid_pandas_arg(arg, arg_names[i], flip(kwargs['axis']))
             
         value = func(*args, **kwargs)
         

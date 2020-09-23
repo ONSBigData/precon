@@ -2,7 +2,7 @@
 
 import pandas as pd
 
-from precon.helpers import reindex_and_fill, axis_flip, _get_end_year
+from precon.helpers import reindex_and_fill, flip, _get_end_year
 from precon._error_handling import _handle_axis, _check_valid_pandas_arg
 from precon.validation import validate_args
 
@@ -11,11 +11,11 @@ from precon.validation import validate_args
 def get_weight_shares(weights, axis=1):
     """If not weight shares already, calculates weight shares."""
     axis = _handle_axis(axis)
-    _check_valid_pandas_arg(weights, 'weights', axis_flip(axis))
+    _check_valid_pandas_arg(weights, 'weights', flip(axis))
     
     # TODO: test precision
     if not weights.sum(axis).round(5).eq(1).all():
-        return weights.div(weights.sum(axis), axis=axis_flip(axis))
+        return weights.div(weights.sum(axis), axis=flip(axis))
     
     else:   # It is already weight shares so return input
         return weights

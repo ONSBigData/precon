@@ -7,7 +7,7 @@ import numpy as np
 import pandas as pd
 
 from precon.index_methods import calculate_index
-from precon.helpers import period_window_fill
+from precon.helpers import period_window_fill, flip
 from precon.weights import reindex_weights_to_indices
 
 
@@ -59,7 +59,7 @@ def impute_base_prices(
         )
 
     # Get the max times to impute for any year.
-    times_to_impute = get_annual_max_count(to_impute, axis^1)
+    times_to_impute = get_annual_max_count(to_impute, flip(axis))
     
     # Repeat the base price imputation for the number of imputations
     # needed, and for each indicator-method combination.
@@ -77,7 +77,7 @@ def impute_base_prices(
             base_prices_filled,
             weights=weights,
             method=index_method,
-            axis=axis^1,
+            axis=flip(axis),
         )
         
         imputed_values = prices.div(index, axis) * 100

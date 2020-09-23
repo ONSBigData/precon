@@ -113,7 +113,7 @@ def axis_slice(value, axis):
     return {0: (value, slice(None)), 1: (slice(None), value)}.get(axis)
 
 
-def axis_flip(axis):
+def flip(axis):
     """Returns the opposite axis value to the one passed."""
     return axis ^ 1
 
@@ -145,7 +145,7 @@ def index_attrs_as_frame(df, attr=None, axis=0):
     
     # Create an axis slice so attrs can be cast to any axis
     if axis == 0:
-        slice_ = axis_slice(None, axis^1)
+        slice_ = axis_slice(None, flip(axis))
         vals = vals[slice_]
     
     # Create an empty DataFrame in original shape for casting
