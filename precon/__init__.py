@@ -5,7 +5,7 @@ from .adjustments import *
 from .aggregation import * 
 from .chaining import *
 from .contributions import *
-from .get_stats import *
+from .stat_compilers import *
 from .helpers import *
 from .re_reference import *
 from .rounding import *

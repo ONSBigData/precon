@@ -80,7 +80,7 @@ def contributions(components, weights, index, double_update=False):
 
 
 def contributions_with_double_update(
-        components, weights, index, start_year
+        components, weights, index, start_year='2017',
         ):
     """Returns the contributions for time periods that include both
     single update and double update.
