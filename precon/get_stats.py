@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from precon.chaining import chain
-from precon.re_reference import set_ref_period
+from precon.re_reference import set_reference_period
 from .contributions import contributions_with_double_update
 
 
@@ -26,7 +26,10 @@ def get_index_and_growth_stats(index, ref_period, double_link=True, prefix=''):
     
     stats=dict()
     stats['idx'] = index.copy()
-    stats[f'idx_r{ref_period}'] = set_ref_period(chained_index, ref_period)
+    stats[f'idx_r{ref_period}'] = set_reference_period(
+        chained_index,
+        ref_period,
+    )
     stats['idx_growth'] = chained_index.pct_change(12) * 100
     stats['idx_growth'].dropna(inplace=True)
     
@@ -78,7 +81,7 @@ def get_reference_table_stats(
     pub_stats['subidx_unchained'] = sub_indices # TODO: DELETE
     pub_subs_chained = chain(sub_indices, double_link)
     pub_stats['subidx_ch'] = pub_subs_chained
-    pub_stats['subidx'] = set_ref_period(pub_subs_chained, ref_period)
+    pub_stats['subidx'] = set_reference_period(pub_subs_chained, ref_period)
     
     pub_stats['weights'] = weight_shares * parts_per
     
