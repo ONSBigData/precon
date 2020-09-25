@@ -62,7 +62,7 @@ def get_reference_table_stats(
         reference_period: str,
         double_link: bool = False,
         parts_per: int = 100,
-        ) -> Dict[str: FrameOrSeries]:
+        ) -> Dict[str, FrameOrSeries]:
     """ 
     Produces the unrounded statistics for the reference tables.
     
