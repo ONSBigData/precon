@@ -83,11 +83,11 @@ def impute_base_prices(
         imputed_values = prices.div(index, axis) * 100
         base_prices = base_prices.mask(to_impute, imputed_values)
     
-    # Using period_window_fill prevents discontinued prices filling
-    # beyond the year that they are discontinued
-    base_prices = period_window_fill(
-        base_prices, periods=12, freq='MS',
-        axis=axis, method='ffill',
+    # Groupby year prevents discontinued prices filling beyond the year
+    # that they are discontinued
+    base_prices = (
+        base_prices.groupby(lambda x: x.year, axis=axis)
+        .fillna(method='ffill', axis=axis)
     )
     
     if shift_imputed_values:
