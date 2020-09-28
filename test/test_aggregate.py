@@ -10,6 +10,7 @@ import pytest
 from precon import aggregate
 from pandas import Timestamp
 from pandas.testing import assert_series_equal
+from pandas._typing import Axis
 
 from precon._error_handling import DateTimeIndexError
 
@@ -19,7 +20,7 @@ class AggTestCase:
     indices: str
     weights: str
     outcome: str
-    axis: Union[str, int] = 1
+    axis: Axis = 1
 
 
 @pytest.fixture(
@@ -94,7 +95,7 @@ def test_aggregate(aggregate_combinator):
     # THEN they should equal the outcome
     indices, weights, outcome, axis = aggregate_combinator
     
-    aggregated = aggregate(indices, weights, axis)
+    aggregated = aggregate(indices, weights, axis=axis)
 
     assert_series_equal(aggregated, outcome, check_names=False)
 
@@ -135,7 +136,7 @@ def test_aggregate_handles_incorrect_dtypes(indices, weights, axis):
     types for indices and weights.
     """
     with pytest.raises(ValueError):
-        aggregate(indices, weights, axis)
+        aggregate(indices, weights, axis=axis)
 
     
 @pytest.mark.parametrize(
@@ -167,7 +168,7 @@ def test_aggregate_handles_axis(axis):
         aggregate(
             pd.DataFrame(index=pd.DatetimeIndex(['2017-01'])),
             pd.DataFrame(index=pd.DatetimeIndex(['2017-01'])),
-            axis,
+            axis=axis,
         ) 
     
 
