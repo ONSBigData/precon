@@ -6,11 +6,11 @@ from typing import Union
 import numpy as np
 import pandas as pd
 
-from precon.weights import get_weight_shares, reindex_weights_to_indices
-from precon.helpers import reduce_cols, flip
-from precon._error_handling import _check_valid_pandas_arg
-from precon._error_handling import _assert_equal_axis_labels
-from precon._error_handling import _handle_axis
+from natstats.weights import get_weight_shares, reindex_weights_to_indices
+from natstats.helpers import reduce_cols, flip
+from natstats._error_handling import _check_valid_pandas_arg
+from natstats._error_handling import _assert_equal_axis_labels
+from natstats._error_handling import _handle_axis
 
 PandasObj = Union[pd.DataFrame, pd.Series]
 Axis = Union[int, str]

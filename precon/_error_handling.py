@@ -1,5 +1,5 @@
 """
-Reusable exceptions for the precon package.
+Reusable exceptions for the natstats package.
 """
 
 import pandas as pd

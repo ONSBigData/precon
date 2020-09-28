@@ -2,9 +2,9 @@
 
 import pandas as pd
 
-from precon.helpers import reindex_and_fill, flip, _get_end_year
-from precon._error_handling import _handle_axis, _check_valid_pandas_arg
-from precon.validation import validate_args
+from natstats.helpers import reindex_and_fill, flip, _get_end_year
+from natstats._error_handling import _handle_axis, _check_valid_pandas_arg
+from natstats.validation import validate_args
 
 
 # @validate_args

@@ -6,9 +6,9 @@ from typing import Optional
 import numpy as np
 import pandas as pd
 
-from precon.index_methods import calculate_index
-from precon.helpers import period_window_fill, flip
-from precon.weights import reindex_weights_to_indices
+from natstats.index_methods import calculate_index
+from natstats.helpers import period_window_fill, flip
+from natstats.weights import reindex_weights_to_indices
 
 
 def impute_base_prices(

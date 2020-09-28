@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-from precon.imputation import impute_base_prices, get_base_prices
-from precon.index_methods import calculate_index
-from precon.helpers import flip
+from natstats.imputation import impute_base_prices, get_base_prices
+from natstats.index_methods import calculate_index
+from natstats.helpers import flip
 
 def apply_index_calculations(
         prices,

@@ -3,8 +3,8 @@
 import pandas as pd
 from pandas._typing import Dict, FrameOrSeries
 
-from precon.chaining import chain
-from precon.re_reference import set_reference_period
+from natstats.chaining import chain
+from natstats.re_reference import set_reference_period
 from .contributions import contributions, contributions_with_double_update
 
 
