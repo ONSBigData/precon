@@ -22,7 +22,7 @@ The full documentation is at http://precon.rtfd.org."""
 history = open('HISTORY.rst').read().replace('.. :changelog:', '')
 
 setup(
-    name='precon',
+    name='natstats',
     version='0.6.0',
     description='A set of functions to calculate Prices Economics statistics.',
     long_description=readme + '\n\n' + doclink + '\n\n' + history,
@@ -30,15 +30,15 @@ setup(
     author_email='mitchell.edmunds@ext.ons.gov.uk',
     url='http://np2rvlapxx507/prices_economics/prices_economics',
     packages=[
-        'precon',
+        'natstats',
     ],
-    package_dir={'precon': 'precon'},
+    package_dir={'natstats': 'natstats'},
     include_package_data=True,
     install_requires=[
     ],
     license='MIT',
     zip_safe=False,
-    keywords='precon',
+    keywords='natstats',
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
         'Intended Audience :: Developers',
