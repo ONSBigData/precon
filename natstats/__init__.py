@@ -5,10 +5,13 @@ from .adjustments import *
 from .aggregation import * 
 from .chaining import *
 from .contributions import *
-from .stat_compilers import *
 from .helpers import *
+from .index_methods import *
+from .imputation import *
+from .pipelines import *
 from .re_reference import *
 from .rounding import *
+from .stat_compilers import *
 from .uprate import *
 from .weights import *
 
