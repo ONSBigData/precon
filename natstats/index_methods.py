@@ -31,7 +31,7 @@ def calculate_index(
         The axis that holds the time series values.
     weights: DataFrame, optional
         The weights to use if the index method requires it.
-    
+
     Returns
     -------
     Series
