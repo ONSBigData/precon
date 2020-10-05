@@ -21,7 +21,7 @@ def impute_base_prices(
         index_method: str,
         shift_imputed_values: bool = True,
         base_period: int = 1,
-        axis: int = 1, 
+        axis: pd._typing.Axis = 1,
         weights: Optional[pd.DataFrame] = None,
         # TODO: make index_method an Enum
         adjustments: Optional[pd.DataFrame] = None,
@@ -139,12 +139,18 @@ def impute_base_prices(
     return base_prices.fillna(start_prices)
 
 
-def get_base_prices(prices, base_period=1, axis=0, ffill=True):
+def get_base_prices(
+        prices: pd.DataFrame,
+        base_period: int = 1,
+        axis: pd._typing.Axis = 0,
+        ffill: bool = True,
+        ) -> pd.DataFrame:
     """Returns the prices at the base month in the same shape as prices.
 
     Default behaviour is to fill forward values, but can be changed to
     return NaN where not base_month by setting ffill=False.
     """
+    # TODO: Change this to work with user defined freq
     bases = prices.axes[axis].month == base_period
 
     # Fill all except base months with NA
@@ -160,14 +166,22 @@ def get_base_prices(prices, base_period=1, axis=0, ffill=True):
         return base_prices
 
 
-def get_quality_adjusted_prices(prices, base_prices, adjustments, axis=1):
+def get_quality_adjusted_prices(
+        prices: pd.DataFrame,
+        base_prices: pd.DataFrame,
+        adjustments: pd.DataFrame,
+        axis: pd._typing.Axis = 1,
+        ) -> pd.DataFrame:
     """Applies the quality adjustments to get new base prices."""    
     adjustment_factor = prices.div(prices - adjustments)
 
     return base_prices * adjustment_factor.cumprod(axis)
 
 
-def get_annual_max_count(df, axis):
+def get_annual_max_count(
+        df: pd.DataFrame,
+        axis: pd._typing.Axis,
+        ) -> int:
     """Counts values present in each year for df, returns max."""
     # TODO: Change this to work with user defined freq
     return int(df.any(axis).replace(True, 1).resample('A').sum().max())
