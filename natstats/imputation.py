@@ -11,7 +11,7 @@ import pandas as pd
 
 from natstats._validation import _handle_axis
 from natstats.index_methods import calculate_index
-from natstats.helpers import flip
+from natstats.helpers import flip, axis_slice
 from natstats.weights import reindex_weights_to_indices
 
 
@@ -155,10 +155,9 @@ def get_base_prices(
 
     # Fill all except base months with NA
     base_prices = prices.copy()
-    if axis == 0:
-       base_prices.iloc[~bases, :] = np.nan
-    elif axis == 1:
-        base_prices.iloc[:, ~bases] = np.nan
+    
+    slice_ = axis_slice(~bases, axis)
+    base_prices.iloc[slice_] = np.nan
     
     if ffill:
         return base_prices.ffill(axis)
