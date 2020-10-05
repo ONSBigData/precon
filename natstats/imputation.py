@@ -6,8 +6,9 @@ from typing import Optional
 import numpy as np
 import pandas as pd
 
+from natstats._validation import _handle_axis
 from natstats.index_methods import calculate_index
-from natstats.helpers import period_window_fill, flip
+from natstats.helpers import flip
 from natstats.weights import reindex_weights_to_indices
 
 
@@ -35,6 +36,8 @@ def impute_base_prices(
     is used for imputation is calculated. The `adjustments` parameter
     is used to optionally pass in quality adjustments.
     """   
+    axis = _handle_axis(axis)
+    
     if weights is not None:
         weights = reindex_weights_to_indices(weights, prices, axis=axis)
         weights = weights.mask(to_impute, 0)
