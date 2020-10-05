@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 
 from pandas import Timestamp
-from precon import get_weight_shares, reindex_weights_to_indices
+from natstats import get_weight_shares, reindex_weights_to_indices
 from pandas.testing import assert_frame_equal
 
 

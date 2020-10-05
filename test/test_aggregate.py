@@ -2,17 +2,15 @@
 Tests for `aggregate` module.
 """
 from dataclasses import dataclass
-from typing import Union
 
 import numpy as np
 import pandas as pd
 import pytest
-from precon import aggregate
+from natstats import aggregate
 from pandas import Timestamp
 from pandas.testing import assert_series_equal
 from pandas._typing import Axis
 
-from precon._error_handling import DateTimeIndexError
 
 @dataclass
 class AggTestCase:
@@ -121,46 +119,6 @@ def test_aggregate_output_type_weight_series(
     aggregated = aggregate(indices_6months, weights_6months)
     assert isinstance(aggregated, pd.Series)
     
-    
-# @pytest.mark.parametrize(
-#     'indices, weights, axis',
-#     [
-#         (True, 234, 1),
-#         ('dataframe', {}, 0),
-#         ([], False, 'columns')
-#      ],
-#     ids=["bool_int", "str_dict", "list_bool"],
-# )
-# def test_aggregate_handles_incorrect_dtypes(indices, weights, axis):
-#     """Test aggregate function raises Value Error if given incorrect
-#     types for indices and weights.
-#     """
-#     with pytest.raises(ValueError):
-#         aggregate(indices, weights, axis=axis)
-
-    
-# @pytest.mark.parametrize(
-#     'indices, weights',
-#     [
-#         (
-#             pd.DataFrame(index=pd.DatetimeIndex(['2012-01'])),
-#             pd.DataFrame()
-#         ),
-#         (
-#             pd.DataFrame(),
-#             pd.DataFrame(index=pd.DatetimeIndex(['2017-01']))
-#         ),
-#         (
-#             pd.DataFrame(index=pd.PeriodIndex(['2017-01'], freq='M')),
-#             pd.DataFrame(index=pd.PeriodIndex(['2017-01'], freq='M')),
-#         ),
-#      ],
-#     ids=["weights_nondatetime", "indices_nondatetime", "both_period_indices"],
-# )
-# def test_aggregate_handles_non_datetimeindex(indices, weights):
-#     with pytest.raises(DateTimeIndexError):
-#         aggregate(indices, weights, 1)
-
 
 @pytest.mark.parametrize('axis', ['toes', 5]) # True])
 def test_aggregate_handles_axis(axis):
@@ -172,21 +130,10 @@ def test_aggregate_handles_axis(axis):
         ) 
     
 
-
 # def test_aggregate_output_not_na(indices, weights):
 #     """Test that there are no additional NAs in the output."""
 #     aggregated = aggregate(indices, weights)
 #     assert aggregated.isna().sum() == indices.isna().sum()
-    
-
-# def test_aggregate_axis_exception(indices, weights, axis):
-#     with pytest.raises(Exception) as execinfo:   
-#         aggregate(indices, weights, axis)
-#     # these asserts are identical; you can use either one   
-#     assert execinfo.value.args[0] == (
-#         "Weights index values are not present in indices "
-#         "index so can't be reindexed."
-#     )
 
 if __name__ == "__main__":
     indices = pd.DataFrame.from_records(
