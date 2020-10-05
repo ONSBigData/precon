@@ -1,8 +1,5 @@
 # -*- coding: utf-8 -*-
-
 import pandas as pd
-
-from natstats._error_handling import assert_argument_is_int
 
 
 def reindex_and_fill(df, other, first='ffill', axis=0):
@@ -74,20 +71,17 @@ def reduce_cols(df, newcol, cols, reduce_func, drop=False, swap=None):
     columns. Options to choose the reduce function (such as mean or
     sum), drop the given columns, and swap the new column inplace
     with one of the reduced columns.
-    """   
-    if swap:
-        assert_argument_is_int(swap, 'swap')
-        try:
-            cols[swap]
-        except IndexError:
-            raise IndexError("swap list index is out of range for given cols")
-        
+    """           
     kwargs = {newcol: df[cols].apply(reduce_func, axis=1)}
     df = df.assign(**kwargs)
     
     if swap:
-        df = swap_columns(df, newcol, cols[swap])
-    
+        try:
+            df = swap_columns(df, newcol, cols[swap])
+            
+        except IndexError:
+            raise IndexError("swap list index is out of range for given cols")
+            
     if drop:
         cols_to_drop = [c for c in cols if c != newcol] 
         df = df.drop(columns=cols_to_drop)

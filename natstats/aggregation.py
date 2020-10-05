@@ -8,9 +8,7 @@ import pandas as pd
 
 from natstats.weights import get_weight_shares, reindex_weights_to_indices
 from natstats.helpers import reduce_cols, flip
-# from natstats._error_handling import _check_valid_pandas_arg
-# from natstats._error_handling import _assert_equal_axis_labels
-from natstats._error_handling import _handle_axis
+from natstats._validation import _handle_axis
 
 PandasObj = Union[pd.DataFrame, pd.Series]
 Axis = Union[int, str]
@@ -39,22 +37,14 @@ def aggregate(
     }
     agg_method = methods_lib.get(method)
     
-    
-    if isinstance(weights, pd.core.series.Series):
+    # Make sure that the indices and weights have the same time series
+    # axis before aggregating
+    if isinstance(weights, pd.Series):
         weights = weights.to_frame()
         if axis == 1:
             weights = weights.T
-    
-    # _check_valid_pandas_arg(indices, 'indices', flip(axis))
-    # _check_valid_pandas_arg(weights, 'weights', flip(axis))
-    
-    # _assert_equal_axis_labels(indices, weights, axis)
 
-    weights = reindex_weights_to_indices(
-        weights,
-        indices,
-        flip(axis),
-    )
+    weights = reindex_weights_to_indices(weights, indices, flip(axis))
     
     # Ensure zero or NA indices have zero weight
     weights = weights.mask(indices.isna() | indices.eq(0), 0)

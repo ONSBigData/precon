@@ -3,15 +3,12 @@
 import pandas as pd
 
 from natstats.helpers import reindex_and_fill, flip, _get_end_year
-from natstats._error_handling import _handle_axis, _check_valid_pandas_arg
-from natstats.validation import validate_args
+from natstats._validation import _handle_axis
 
 
-# @validate_args
 def get_weight_shares(weights, axis=1):
     """If not weight shares already, calculates weight shares."""
     axis = _handle_axis(axis)
-    _check_valid_pandas_arg(weights, 'weights', flip(axis))
     
     # TODO: test precision
     if not weights.sum(axis).round(5).eq(1).all():
@@ -20,18 +17,12 @@ def get_weight_shares(weights, axis=1):
     else:   # It is already weight shares so return input
         return weights
 
-# @validate_args
+
 def reindex_weights_to_indices(weights, indices, axis=0):
     """If not already indexed like indices, reindexes weights."""
     axis = _handle_axis(axis)
-    _check_valid_pandas_arg(weights, 'weights', axis)
-    _check_valid_pandas_arg(weights, 'indices', axis)
-    
-    if not weights.axes[axis].isin(indices.axes[axis]).all():
-        raise Exception("Weights index values are not present in indices "
-                        "index so can't be reindexed.")
-        
-    if not (weights.axes[axis]).equals(indices.axes[axis]):
+            
+    if not weights.axes[axis].equals(indices.axes[axis]):
         return reindex_and_fill(weights, indices, 'ffill', axis)
     else:
         return weights
