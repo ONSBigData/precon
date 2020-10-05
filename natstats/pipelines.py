@@ -4,7 +4,7 @@ from natstats.imputation import impute_base_prices, get_base_prices
 from natstats.index_methods import calculate_index
 from natstats.helpers import flip
 
-def apply_index_calculations(
+def index_calculator(
         prices,
         base_period=1,
         axis=1,
