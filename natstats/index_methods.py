@@ -4,7 +4,7 @@ A set of index methods and index helper functions.
 import numpy as np
 import pandas as pd
 
-from precon.aggregation import aggregate
+from natstats.aggregation import aggregate
 
 
 def calculate_index(

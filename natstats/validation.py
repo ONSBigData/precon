@@ -7,8 +7,8 @@ Created on Mon Jun 29 15:51:16 2020
 import inspect
 import functools
 
-from precon._error_handling import _handle_axis, _check_valid_pandas_arg
-from precon.helpers import flip
+from natstats._error_handling import _handle_axis, _check_valid_pandas_arg
+from natstats.helpers import flip
 
 def get_func_defaults(func):
     """ """

@@ -1,7 +1,23 @@
 .. :changelog:
+.. role:: python(code)
+   :language: python
 
 History
 -------
+
+0.6.0   (2020-09-28)
+++++++++++++++++++++
+
+* Package name change from precon to natstats
+* Added functionality for :python:`base_price_imputation` function accepting
+    the :python:`to_impute` argument
+* Aggregation function now works with mean or geometric mean depending
+    on :python:`method` argument
+* The function :python:`calculate_index` introduced offering various
+    different index methods
+* The :python:`index_calculator` pipeline function offers an end-to-end
+    pipeline for calculating indices with optional base price imputation
+
 
 0.5.1   (2020-06-09)
 ++++++++++++++++++++

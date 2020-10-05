@@ -2,7 +2,7 @@
 
 import pandas as pd
 
-from precon._error_handling import assert_argument_is_int
+from natstats._error_handling import assert_argument_is_int
 
 
 def reindex_and_fill(df, other, first='ffill', axis=0):
