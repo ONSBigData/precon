@@ -1,9 +1,12 @@
 """
 A set of index methods and index helper functions.
 """
+from typing import Optional
+
 import numpy as np
 import pandas as pd
 
+from natstats._validation import _handle_axis
 from natstats.aggregation import aggregate
 
 
@@ -12,11 +15,30 @@ def calculate_index(
         base_prices: pd.DataFrame,
         method: str,
         axis: pd._typing.Axis = 1,
-        weights: pd.DataFrame = None,
-        ) -> pd.DataFrame:
-    """Calculates the index according to weights or methods parameters
-    using given prices and base prices.
-    """            
+        weights: Optional[pd.DataFrame] = None,
+        ) -> pd.Series:
+    """Calculates the index with the given method.
+    
+    Parameters
+    ----------
+    prices: DataFrame
+        The prices with which to calculate the index.
+    base_prices: DataFrame
+        The pre-calculated base prices for the index calculation.
+    method: {'jevons', 'dutot', 'carli', 'laspeyres', 'geometric_laspeyres'}, str or callable, defaults to 'jevons'
+        Method to calculate the index.
+    axis : {0 or 'index', 1 or 'columns'}, defaults to 0
+        The axis that holds the time series values.
+    weights: DataFrame, optional
+        The weights to use if the index method requires it.
+        
+    Returns
+    -------
+    Series
+        The index.
+    """
+    axis = _handle_axis(axis)
+    
     index_method_mapper = {
         'jevons': jevons_index,
         'carli': carli_index,
@@ -26,7 +48,7 @@ def calculate_index(
     }
     index_method = index_method_mapper.get(method)
     
-    if weights is not None:
+    if method in ['laspeyres', 'geometric_laspeyres']:
         indices = index_method(prices, base_prices, weights, axis) 
     else:
         indices = index_method(prices, base_prices, axis)
