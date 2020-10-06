@@ -49,51 +49,72 @@ def calculate_index(
     index_method = index_method_mapper.get(method)
     
     if method in ['laspeyres', 'geometric_laspeyres']:
-        indices = index_method(prices, base_prices, weights, axis) 
+        return index_method(prices, base_prices, weights, axis)
     else:
-        indices = index_method(prices, base_prices, axis)
-        
-    return indices * 100
+        return index_method(prices, base_prices, axis)
     
 
-def jevons_index(prices, base_prices, axis):
+def jevons_index(
+        prices: pd.DataFrame,
+        base_prices: pd.DataFrame,
+        axis: int,
+        ) -> pd.Series:
     """Calculates an index using the Jevons method which takes the
     geometric mean of price relatives.
     """
     price_relatives = prices.div(base_prices)
-    return geo_mean(price_relatives, axis)
+    return geo_mean(price_relatives, axis) * 100
 
 
-def carli_index(prices, base_prices, axis):
+def carli_index(
+        prices: pd.DataFrame,
+        base_prices: pd.DataFrame,
+        axis: int,
+        ) -> pd.Series:
     """Calculates an index using the Carli method which takes the mean
     of price relatives.
     """
     price_relatives = prices.div(base_prices)
-    return price_relatives.mean(axis)
+    return price_relatives.mean(axis) * 100
 
 
-def dutot_index(prices, base_prices, axis):
+def dutot_index(
+        prices: pd.DataFrame,
+        base_prices: pd.DataFrame,
+        axis: int,
+        ) -> pd.Series:
     """Calculates an index using the Dutot method which divides the
     mean of the prices by the mean of the base prices.
     """
-    return prices.mean(axis).div(base_prices.mean(axis))
+    return prices.mean(axis).div(base_prices.mean(axis)) * 100
 
 
-def laspeyres_index(prices, base_prices, weights, axis):
+def laspeyres_index(
+        prices: pd.DataFrame,
+        base_prices: pd.DataFrame,
+        weights: pd.DataFrame,
+        axis: int,
+        ) -> pd.Series:
     """Calculates an index using the Laspeyres method which takes a
     sum of the product of the price relatives and weight shares.
     """
     price_relatives = prices.div(base_prices)
-    return aggregate(price_relatives, weights, axis=axis)
+    return aggregate(price_relatives, weights, axis=axis) * 100
 
 
-def geometric_laspeyres_index(prices, base_prices, weights, axis):
+def geometric_laspeyres_index(
+        prices: pd.DataFrame,
+        base_prices: pd.DataFrame,
+        weights: pd.DataFrame,
+        axis: int,
+        ) -> pd.Series:
     """Calculates an index using the geometric Laspeyres method which
     takes the geometric mean of the price relatives multiplied by weight
     shares.
     """
     price_relatives = prices.div(base_prices)
-    return aggregate(price_relatives, weights, method='geomean', axis=axis)
+    index = aggregate(price_relatives, weights, method='geomean', axis=axis)
+    return index * 100
 
 
 def geo_mean(indices: pd.DataFrame, axis: int = 1) -> pd.DataFrame:
