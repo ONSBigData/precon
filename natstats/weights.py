@@ -32,23 +32,3 @@ def reindex_weights_to_indices(weights, indices, axis=0):
         return reindex_and_fill(weights, indices, 'ffill', axis)
     else:
         return weights
-
-
-def reindex_to_update_periods(weights):
-    """Returns only months where weights are updated.
-    
-    Useful for reversing a reindex and fill operation where the weights
-    repeat monthly. Takes Feb values pre 2017 and Jan & Feb values post
-    2017 for the double update.
-    """
-    # TODO: Rewrite using shift
-    pre_weights = weights.loc[:'2016']
-    post_weights = weights.loc['2017':]
-    
-    to_concat = [
-        pre_weights.loc[pre_weights.index.month == 2],
-        post_weights.loc[post_weights.index.month.isin([1, 2])],
-    ]
-    
-    return pd.concat(to_concat)
-

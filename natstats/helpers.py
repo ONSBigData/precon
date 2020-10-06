@@ -149,3 +149,10 @@ def index_attrs_as_frame(df, attr=None, axis=0):
     
     # Return with the original attribute dtype
     return all_attrs.astype(vals.dtype)
+
+
+def reduce_to_only_differing_periods(df, axis):
+    """Reduces a DataFrame with lots of repeating values over a time
+    series to only the periods where the values have changed.
+    """
+    return df[df.ne(df.shift(1, axis=axis))].dropna()
