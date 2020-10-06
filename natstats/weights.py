@@ -21,6 +21,12 @@ def get_weight_shares(weights, axis=1):
 def reindex_weights_to_indices(weights, indices, axis=0):
     """If not already indexed like indices, reindexes weights."""
     axis = _handle_axis(axis)
+    
+    # Convert to a DataFrame is weight is a Series, transpose if needed
+    if isinstance(weights, pd.Series):
+        weights = weights.to_frame()
+        if axis == 0:
+            weights = weights.T
             
     if not weights.axes[axis].equals(indices.axes[axis]):
         return reindex_and_fill(weights, indices, 'ffill', axis)

@@ -61,12 +61,7 @@ def aggregate(
     agg_method = methods_lib.get(method)
     
     # Make sure that the indices and weights have the same time series
-    # axis before aggregating
-    if isinstance(weights, pd.Series):
-        weights = weights.to_frame()
-        if axis == 1:
-            weights = weights.T
-
+    # axis before aggregating.
     weights = reindex_weights_to_indices(weights, indices, flip(axis))
 
     # Ensure zero or NA indices have zero weight
