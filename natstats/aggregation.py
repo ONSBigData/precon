@@ -68,51 +68,6 @@ def _geo_mean_aggregate(indices, weight_shares, axis):
     )
 
 
-def reaggregate_index(indices, weights, subs):
-    """Returns a reaggregated index after substituting.
-    
-    Parameters
-    ----------
-    indices : DataFrame
-        A set of unchained component indices.
-    weights : DataFrame
-        A set of component weights.
-    subs : dict of {str : Series}
-        A dictionary of components to be substituted where key is
-        column name and value is the Series to substitute.
-        
-    Returns
-    -------
-    Series
-        The unchained aggregate index after substituting.
-    """
-    subbed_indices = substitute_indices(indices, subs)
-    return aggregate(subbed_indices, weights)
-
-
-def substitute_indices(indices, subs):
-    """Substitutes the indices at given keys for given Series.
-    
-    Parameters
-    ----------
-    indices : DataFrame
-        A set of unchained component indices.
-    subs : dict of {str : Series}
-        A dictionary of components to be substituted where key is
-        column name and value is the Series to substitute.
-        
-    Returns
-    -------
-    DataFrame
-        The original indices including the substitutes.
-    """
-    subbed_indices = indices.copy()
-    for key, sub in subs.items():
-        subbed_indices[key] = sub
-    
-    return subbed_indices
-
-
 def sum_up_hierarchy(df, labels, tree):
     """Expand to the full structure then aggregate sum up hierarchy."""
     df_expanded = expand_full_structure(df, labels)
