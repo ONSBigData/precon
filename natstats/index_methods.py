@@ -5,6 +5,7 @@ from typing import Optional
 
 import numpy as np
 import pandas as pd
+from pandas._typing import Axis
 
 from natstats._validation import _handle_axis
 from natstats.aggregation import aggregate
@@ -14,7 +15,7 @@ def calculate_index(
         prices: pd.DataFrame,
         base_prices: pd.DataFrame,
         method: str,
-        axis: pd._typing.Axis = 1,
+        axis: Axis = 1,
         weights: Optional[pd.DataFrame] = None,
         ) -> pd.Series:
     """Calculates the index with the given method.
@@ -57,7 +58,7 @@ def calculate_index(
 def jevons_index(
         prices: pd.DataFrame,
         base_prices: pd.DataFrame,
-        axis: int,
+        axis: int = 1,
         ) -> pd.Series:
     """Calculates an index using the Jevons method which takes the
     geometric mean of price relatives.
@@ -69,7 +70,7 @@ def jevons_index(
 def carli_index(
         prices: pd.DataFrame,
         base_prices: pd.DataFrame,
-        axis: int,
+        axis: int = 1,
         ) -> pd.Series:
     """Calculates an index using the Carli method which takes the mean
     of price relatives.
@@ -81,7 +82,7 @@ def carli_index(
 def dutot_index(
         prices: pd.DataFrame,
         base_prices: pd.DataFrame,
-        axis: int,
+        axis: int = 1,
         ) -> pd.Series:
     """Calculates an index using the Dutot method which divides the
     mean of the prices by the mean of the base prices.
@@ -93,7 +94,7 @@ def laspeyres_index(
         prices: pd.DataFrame,
         base_prices: pd.DataFrame,
         weights: pd.DataFrame,
-        axis: int,
+        axis: int = 1,
         ) -> pd.Series:
     """Calculates an index using the Laspeyres method which takes a
     sum of the product of the price relatives and weight shares.
@@ -106,7 +107,7 @@ def geometric_laspeyres_index(
         prices: pd.DataFrame,
         base_prices: pd.DataFrame,
         weights: pd.DataFrame,
-        axis: int,
+        axis: int = 1,
         ) -> pd.Series:
     """Calculates an index using the geometric Laspeyres method which
     takes the geometric mean of the price relatives multiplied by weight

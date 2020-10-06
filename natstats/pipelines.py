@@ -2,7 +2,7 @@
 from typing import Optional
 
 import pandas as pd
-from pd._typing import Axis
+from pandas._typing import Axis
 
 from natstats._validation import _handle_axis
 from natstats.imputation import impute_base_prices, get_base_prices
