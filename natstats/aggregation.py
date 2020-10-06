@@ -98,26 +98,3 @@ def expand_full_structure(df, headers):
         raise Exception("Not all columns of given DataFrame are in headers.")
         
     return df.reindex(headers, axis=1).fillna(0)
-
-
-def create_special_aggregation(indices, weights, name, agg_cols):
-    """Create a special aggregation by aggregating indices and 
-    summing the weights.
-    """
-    other_agg = aggregate(indices[agg_cols], weights[agg_cols])
-    other_agg = other_agg.rename(name)
-
-    to_concat = [indices.loc[:, ~indices.columns.isin(agg_cols)], other_agg]
-    pub_subs = pd.concat(to_concat, axis=1)
-    
-    pub_weights = reduce_cols(
-            weights,
-            newcol=name,
-            cols=agg_cols,
-            reduce_func=sum,
-            drop=True,
-            swap=4,
-    )
-    
-    return pub_subs, pub_weights
-
