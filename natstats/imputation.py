@@ -183,4 +183,4 @@ def get_annual_max_count(
         ) -> int:
     """Counts values present in each year for df, returns max."""
     # TODO: Change this to work with user defined freq
-    return int(df.any(axis).replace(True, 1).resample('A').sum().max())
+    return df.any(axis).groupby(lambda x: x.year).sum()
