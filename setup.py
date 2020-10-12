@@ -28,7 +28,7 @@ setup(
     long_description=readme + '\n\n' + doclink + '\n\n' + history,
     author='Mitchell Edmunds',
     author_email='mitchell.edmunds@ext.ons.gov.uk',
-    url='http://np2rvlapxx507/prices_economics/prices_economics',
+    url='https://github.com/ONSBigData/natstats',
     packages=[
         'natstats',
     ],
