@@ -13,7 +13,7 @@ Types of Contributions
 Report Bugs
 ~~~~~~~~~~~
 
-Report bugs at https://github.com/edmundsm/precon/issues.
+Report bugs at https://github.com/ONSBigData/natstats/issues.
 
 If you are reporting a bug, please include:
 
@@ -43,7 +43,7 @@ articles, and such.
 Submit Feedback
 ~~~~~~~~~~~~~~~
 
-The best way to send feedback is to file an issue at https://github.com/edmundsm/precon/issues.
+The best way to send feedback is to file an issue at https://github.com/ONSBigData/natstats/issues.
 
 If you are proposing a feature:
 
@@ -55,13 +55,13 @@ If you are proposing a feature:
 Get Started!
 ------------
 
-Ready to contribute? Here's how to set up `precon` for
+Ready to contribute? Here's how to set up `natstats` for
 local development.
 
-1. Fork_ the `precon` repo on GitHub.
+1. Fork_ the `natstats` repo on GitHub.
 2. Clone your fork locally::
 
-    $ git clone git@github.com:your_name_here/precon.git
+    $ git clone git@github.com:your_name_here/natstats.git
 
 3. Create a branch for local development::
 
@@ -84,7 +84,7 @@ To get tox, just pip install it.
 
 6. Submit a pull request through the GitHub website.
 
-.. _Fork: https://github.com/edmundsm/precon/fork
+.. _Fork: https://github.com/ONSBigData/natstats
 
 Pull Request Guidelines
 -----------------------
@@ -106,4 +106,4 @@ Tips
 
 To run a subset of tests::
 
-	 $ py.test test/test_precon.py
+	 $ pytest test/test_aggregate.py

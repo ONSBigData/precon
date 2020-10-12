@@ -5,7 +5,7 @@ Credits
 Development Lead
 ----------------
 
-* Mitchell Edmunds <mitchell.edmunds@ext.ons.gov.uk>
+* Mitch Edmunds <mitchell.edmunds@ext.ons.gov.uk>
 
 Contributors
 ------------
