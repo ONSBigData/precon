@@ -20,8 +20,9 @@ Contents:
 Feedback
 ========
 
-If you have any suggestions or questions about **precon** feel free to email me
-at mitchell.edmunds@ext.ons.gov.uk.
+If you have any suggestions or questions about **natstats** feel free to email
+me at mitchell.edmunds@ext.ons.gov.uk.
 
-If you encounter any errors or problems with **precon**, please let me know!
-Open an Issue at the GitHub http://github.com/edmundsm/precon main repository.
+If you encounter any errors or problems with **natstats**, please let me know!
+Open an Issue at the GitHub https://github.com/ONSBigData/natstats main
+repository.

@@ -2,6 +2,6 @@
 Usage
 ========
 
-To use precon in a project::
+To use natstats in a project::
 
-	import precon
+	import natstats
