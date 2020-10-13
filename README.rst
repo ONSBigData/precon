@@ -1,20 +1,18 @@
 ============================================================
-precon: Python functions for National Statistic production
+precon: Python functions for Price Index production
 ============================================================
 
 What is it?
 -----------
 
 **precon** is a Python package that provides a suite of speedy, vectorised
-functions for implementing common methods in the production of National
-Statistics. It aims to provide the high-level building blocks for building 
-statistical systems at National Statistical Institutes (NSIs) and other
-research institutions concerned with economic and social statistics. It has
-been developed in-house at the Office for National Statistics (ONS) with an
-early slant towards calculating inflation and price statistics, but it has the
-broader goal of becoming the go-to package for all economic and public policy
-stats production. This can only be achieved with help from the community, so
-all contributions are welcome!
+functions for implementing common methods in the production of Price Indices.
+It aims to provide the high-level building blocks for building statistical
+systems at National Statistical Institutes (NSIs) and other research
+institutions concerned with creating indices. It has been developed in-house
+at the Office for National Statistics (ONS) and aims to become the standard
+library for price index production. This can only be achieved with help from
+the community, so all contributions are welcome!
 
 
 Installation
@@ -22,7 +20,7 @@ Installation
 
 .. code-block:: bash
 
-    pip install git+http://np2rvlapxx507/prices_economics/prices_economics.git
+    pip install git+https://github.com/ONSBigData/precon.git
 
 
 Use
