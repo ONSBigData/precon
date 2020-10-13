@@ -124,6 +124,7 @@ def impute_base_prices(
     # Groupby year prevents discontinued prices filling beyond the year
     # that they are discontinued
     # TODO: Get this to work for user defined freq
+    # TODO: Check this doesn't fail for central collection
     base_prices = (
         base_prices.groupby(lambda x: x.year, axis=axis)
         .fillna(method='ffill', axis=axis)
