@@ -5,9 +5,9 @@ import numpy as np
 import pandas as pd
 from pandas._typing import Axis, FrameOrSeriesUnion
 
-from natstats.weights import get_weight_shares, reindex_weights_to_indices
-from natstats.helpers import flip
-from natstats._validation import _handle_axis
+from precon.weights import get_weight_shares, reindex_weights_to_indices
+from precon.helpers import flip
+from precon._validation import _handle_axis
 
 
 def aggregate(

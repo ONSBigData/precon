@@ -24,7 +24,7 @@ clean-pyc:
 	find . -name '*~' -exec rm -f {} +
 
 lint:
-	flake8 natstats test
+	flake8 precon test
 
 test:
 	pytest
@@ -33,15 +33,15 @@ test-all:
 	tox
 
 coverage:
-	coverage run --source natstats setup.py test
+	coverage run --source precon setup.py test
 	coverage report -m
 	coverage html
 	open htmlcov/index.html
 
 docs:
-	rm -f docs/natstats.rst
+	rm -f docs/precon.rst
 	rm -f docs/modules.rst
-	sphinx-apidoc -o docs/ natstats
+	sphinx-apidoc -o docs/ precon
 	$(MAKE) -C docs clean
 	$(MAKE) -C docs html
 	open docs/_build/html/index.html

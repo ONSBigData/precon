@@ -7,7 +7,7 @@ from typing import Union
 import numpy as np
 import pandas as pd
 
-from natstats.helpers import axis_slice
+from precon.helpers import axis_slice
 
 def round_and_adjust(
         obj: Union[pd.DataFrame, pd.Series],

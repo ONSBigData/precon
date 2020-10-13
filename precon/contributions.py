@@ -4,8 +4,8 @@ Functions to calculate contributions to growth.
 
 import pandas as pd
 
-from natstats.helpers import _selector
-from natstats.weights import get_weight_shares, reindex_weights_to_indices
+from precon.helpers import _selector
+from precon.weights import get_weight_shares, reindex_weights_to_indices
 
 def contributions(components, weights, index, double_update=False):
     """

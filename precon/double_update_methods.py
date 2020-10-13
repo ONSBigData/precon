@@ -2,7 +2,7 @@
 
 import pandas as pd
 
-from natstats.helpers import _get_end_year
+from precon.helpers import _get_end_year
 
 def jan_adjust_weights(weights, direction='back'):
     """Adjust Feb weights by one month so that weights start in Jan."""

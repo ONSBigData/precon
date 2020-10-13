@@ -2,8 +2,8 @@
 import pandas as pd
 from pandas._typing import Axis, FrameOrSeries, FrameOrSeriesUnion
 
-from natstats.helpers import reindex_and_fill, flip
-from natstats._validation import _handle_axis
+from precon.helpers import reindex_and_fill, flip
+from precon._validation import _handle_axis
 
 
 def get_weight_shares(

@@ -7,8 +7,8 @@ import numpy as np
 import pandas as pd
 from pandas._typing import Axis
 
-from natstats._validation import _handle_axis
-from natstats.aggregation import aggregate
+from precon._validation import _handle_axis
+from precon.aggregation import aggregate
 
 
 def calculate_index(

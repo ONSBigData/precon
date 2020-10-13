@@ -8,7 +8,7 @@ History
 0.6.0   (2020-09-28)
 ++++++++++++++++++++
 
-* Package name change from precon to natstats
+* Package name change from precon to precon
 * Added functionality for :python:`base_price_imputation` function accepting
     the :python:`to_impute` argument
 * Aggregation function now works with mean or geometric mean depending

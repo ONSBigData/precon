@@ -4,10 +4,10 @@ from typing import Optional
 import pandas as pd
 from pandas._typing import Axis
 
-from natstats._validation import _handle_axis
-from natstats.imputation import impute_base_prices, get_base_prices
-from natstats.index_methods import calculate_index
-from natstats.helpers import flip
+from precon._validation import _handle_axis
+from precon.imputation import impute_base_prices, get_base_prices
+from precon.index_methods import calculate_index
+from precon.helpers import flip
 
 
 def index_calculator(

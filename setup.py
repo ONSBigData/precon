@@ -22,23 +22,23 @@ The full documentation is at http://precon.rtfd.org."""
 history = open('HISTORY.rst').read().replace('.. :changelog:', '')
 
 setup(
-    name='natstats',
+    name='precon',
     version='0.6.0',
     description='A set of functions to calculate Prices Economics statistics.',
     long_description=readme + '\n\n' + doclink + '\n\n' + history,
     author='Mitchell Edmunds',
     author_email='mitchell.edmunds@ext.ons.gov.uk',
-    url='https://github.com/ONSBigData/natstats',
+    url='https://github.com/ONSBigData/precon',
     packages=[
-        'natstats',
+        'precon',
     ],
-    package_dir={'natstats': 'natstats'},
+    package_dir={'precon': 'precon'},
     include_package_data=True,
     install_requires=[
     ],
     license='MIT',
     zip_safe=False,
-    keywords='natstats',
+    keywords='precon',
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
         'Intended Audience :: Developers',

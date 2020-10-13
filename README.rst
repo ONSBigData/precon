@@ -1,11 +1,11 @@
 ============================================================
-natstats: Python functions for National Statistic production
+precon: Python functions for National Statistic production
 ============================================================
 
 What is it?
 -----------
 
-**natstats** is a Python package that provides a suite of speedy, vectorised
+**precon** is a Python package that provides a suite of speedy, vectorised
 functions for implementing common methods in the production of National
 Statistics. It aims to provide the high-level building blocks for building 
 statistical systems at National Statistical Institutes (NSIs) and other
@@ -30,13 +30,13 @@ Use
 
 .. code-block:: python
 
-    import natstats
+    import precon
 
 
 API
 ---
 
-Many functions in the **natstats** package are designed to work with **pandas**
+Many functions in the **precon** package are designed to work with **pandas**
 DataFrames or Series that contain only one type of value, with any categorical
 or descriptive metadata contained within either the index or columns axis.
 Each component of a statistical operation or equation will usually be within
@@ -65,11 +65,13 @@ Features
 * Re-reference indices to start from a different time period.
 * Calculate contributions to higher-level indices from each of the component indices.
 * Impute new base prices over a time series.
-.. * Calculate contributions or aggregate up a hierarchy present in a **pandas** 
-..    MultiIndex.
 * Uprating values by index movements.
 * Rounding weight values with adjustment to ensure the sum doesn't change.
 * Stat compiler functions to quickly produce common sets of statistics.
+
+
+.. * Calculate contributions or aggregate up a hierarchy present in a **pandas**
+..    MultiIndex.
 
 
 Dependencies
@@ -79,7 +81,7 @@ Dependencies
 * `NumPy <https://numpy.org/>`_
 
 
-Contributing to natstats
+Contributing to precon
 ------------------------
 
 See CONTRIBUTING.rst

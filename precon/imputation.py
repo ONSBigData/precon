@@ -9,10 +9,10 @@ from typing import Optional
 import numpy as np
 import pandas as pd
 
-from natstats._validation import _handle_axis
-from natstats.index_methods import calculate_index
-from natstats.helpers import flip, axis_slice
-from natstats.weights import reindex_weights_to_indices
+from precon._validation import _handle_axis
+from precon.index_methods import calculate_index
+from precon.helpers import flip, axis_slice
+from precon.weights import reindex_weights_to_indices
 
 
 def impute_base_prices(

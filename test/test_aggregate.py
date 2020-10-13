@@ -6,7 +6,7 @@ from dataclasses import dataclass
 import numpy as np
 import pandas as pd
 import pytest
-from natstats import aggregate
+from precon import aggregate
 from pandas import Timestamp
 from pandas.testing import assert_series_equal
 from pandas._typing import Axis
