@@ -27,7 +27,7 @@ lint:
 	flake8 precon test
 
 test:
-	py.test
+	pytest
 
 test-all:
 	tox
@@ -46,11 +46,13 @@ docs:
 	$(MAKE) -C docs html
 	open docs/_build/html/index.html
 
-release: clean
-	python setup.py sdist upload
-	python setup.py bdist_wheel upload
-
 sdist: clean
 	python setup.py sdist
-	python setup.py bdist_wheel upload
+	python setup.py bdist_wheel
 	ls -l dist
+
+testpypi:
+	twine upload -r testpypi dist/*
+
+pypi:
+	twine upload dist/*

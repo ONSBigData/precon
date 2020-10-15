@@ -1,8 +1,5 @@
 # -*- coding: utf-8 -*-
-
 import pandas as pd
-
-from precon._error_handling import assert_argument_is_int
 
 
 def reindex_and_fill(df, other, first='ffill', axis=0):
@@ -74,20 +71,17 @@ def reduce_cols(df, newcol, cols, reduce_func, drop=False, swap=None):
     columns. Options to choose the reduce function (such as mean or
     sum), drop the given columns, and swap the new column inplace
     with one of the reduced columns.
-    """   
-    if swap:
-        assert_argument_is_int(swap, 'swap')
-        try:
-            cols[swap]
-        except IndexError:
-            raise IndexError("swap list index is out of range for given cols")
-        
+    """           
     kwargs = {newcol: df[cols].apply(reduce_func, axis=1)}
     df = df.assign(**kwargs)
     
     if swap:
-        df = swap_columns(df, newcol, cols[swap])
-    
+        try:
+            df = swap_columns(df, newcol, cols[swap])
+            
+        except IndexError:
+            raise IndexError("swap list index is out of range for given cols")
+            
     if drop:
         cols_to_drop = [c for c in cols if c != newcol] 
         df = df.drop(columns=cols_to_drop)
@@ -113,7 +107,7 @@ def axis_slice(value, axis):
     return {0: (value, slice(None)), 1: (slice(None), value)}.get(axis)
 
 
-def axis_flip(axis):
+def flip(axis):
     """Returns the opposite axis value to the one passed."""
     return axis ^ 1
 
@@ -145,7 +139,7 @@ def index_attrs_as_frame(df, attr=None, axis=0):
     
     # Create an axis slice so attrs can be cast to any axis
     if axis == 0:
-        slice_ = axis_slice(None, axis^1)
+        slice_ = axis_slice(None, flip(axis))
         vals = vals[slice_]
     
     # Create an empty DataFrame in original shape for casting
@@ -155,3 +149,10 @@ def index_attrs_as_frame(df, attr=None, axis=0):
     
     # Return with the original attribute dtype
     return all_attrs.astype(vals.dtype)
+
+
+def reduce_to_only_differing_periods(df, axis):
+    """Reduces a DataFrame with lots of repeating values over a time
+    series to only the periods where the values have changed.
+    """
+    return df[df.ne(df.shift(1, axis=axis))].dropna()

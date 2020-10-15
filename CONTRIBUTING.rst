@@ -13,7 +13,7 @@ Types of Contributions
 Report Bugs
 ~~~~~~~~~~~
 
-Report bugs at https://github.com/edmundsm/precon/issues.
+Report bugs at https://github.com/ONSBigData/precon/issues.
 
 If you are reporting a bug, please include:
 
@@ -43,7 +43,7 @@ articles, and such.
 Submit Feedback
 ~~~~~~~~~~~~~~~
 
-The best way to send feedback is to file an issue at https://github.com/edmundsm/precon/issues.
+The best way to send feedback is to file an issue at https://github.com/ONSBigData/precon/issues.
 
 If you are proposing a feature:
 
@@ -84,7 +84,7 @@ To get tox, just pip install it.
 
 6. Submit a pull request through the GitHub website.
 
-.. _Fork: https://github.com/edmundsm/precon/fork
+.. _Fork: https://github.com/ONSBigData/precon
 
 Pull Request Guidelines
 -----------------------
@@ -106,4 +106,4 @@ Tips
 
 To run a subset of tests::
 
-	 $ py.test test/test_precon.py
+	 $ pytest test/test_aggregate.py

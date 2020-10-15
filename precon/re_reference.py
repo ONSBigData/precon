@@ -28,14 +28,6 @@ def set_index_range(df, start=None, end=None):
     return subset
 
 
-def prices_to_index(prices): #TODO add base
-    """Returns an index from a DataFrame or Series of aggregated prices."""
-    if isinstance(prices, pd.Series):
-        return prices/prices.iloc[0] * 100
-    else:
-        return prices.div(prices.iloc[0, :]) * 100
-
-
 def full_index_to_in_year_indices(full_index):
     """Break index down into Jan-Jan+1 segments, rebased at 100 each year.
     Returns a dictionary of the in-year indices with years as keys.

@@ -1,17 +1,24 @@
 """__init__.py"""
 
-
-from .adjustments import jan_adjustment, round_and_adjust_weights
-from .aggregation import * 
-from .chaining import *
-from .contributions import *
-from .get_stats import *
-from .helpers import *
-from .re_reference import *
-from .rounding import *
-from .uprate import *
-from .weights import *
-
 __author__ = 'Mitchell Edmunds'
 __email__ = 'mitchell.edmunds@ext.ons.gov.uk'
-__version__ = '0.5.1'
+__version__ = '0.6.1'
+__all__ = [
+    'adjustments',
+    'aggregation',
+    'chaining',
+    'contributions',
+    'helpers',
+    'index_methods',
+    'imputation',
+    'pipelines',
+    're_reference',
+    'rounding',
+    'stat_compilers',
+    'uprate',
+    'weights',
+]
+__doc__ = """
+
+
+"""

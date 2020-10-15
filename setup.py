@@ -23,12 +23,12 @@ history = open('HISTORY.rst').read().replace('.. :changelog:', '')
 
 setup(
     name='precon',
-    version='0.5.1',
+    version='0.6.1',
     description='A set of functions to calculate Prices Economics statistics.',
     long_description=readme + '\n\n' + doclink + '\n\n' + history,
     author='Mitchell Edmunds',
     author_email='mitchell.edmunds@ext.ons.gov.uk',
-    url='http://np2rvlapxx507/prices_economics/prices_economics',
+    url='https://github.com/ONSBigData/precon',
     packages=[
         'precon',
     ],
@@ -44,11 +44,9 @@ setup(
         'Intended Audience :: Developers',
         'License :: OSI Approved :: MIT License',
         'Natural Language :: English',
-        'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.6',
-        'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.3',
+        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: Implementation :: PyPy',
     ],
 )
