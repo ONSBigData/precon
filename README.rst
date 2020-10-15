@@ -20,7 +20,7 @@ Installation
 
 .. code-block:: bash
 
-    pip install git+https://github.com/ONSBigData/precon.git
+    pip install precon
 
 
 Use
