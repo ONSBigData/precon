@@ -23,7 +23,7 @@ history = open('HISTORY.rst').read().replace('.. :changelog:', '')
 
 setup(
     name='precon',
-    version='0.6.0',
+    version='0.6.1',
     description='A set of functions to calculate Prices Economics statistics.',
     long_description=readme + '\n\n' + doclink + '\n\n' + history,
     author='Mitchell Edmunds',

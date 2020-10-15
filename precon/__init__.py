@@ -2,7 +2,7 @@
 
 __author__ = 'Mitchell Edmunds'
 __email__ = 'mitchell.edmunds@ext.ons.gov.uk'
-__version__ = '0.6.0'
+__version__ = '0.6.1'
 __all__ = [
     'adjustments',
     'aggregation',
