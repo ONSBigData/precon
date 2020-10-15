@@ -8,7 +8,9 @@ History
 0.6.1   (2020-10-15)
 ++++++++++++++++++++
 
+* Bug fix: fixed broken API definition.
 * Updated README to reflect new installation instructions.
+
 
 
 0.6.0   (2020-10-14)
