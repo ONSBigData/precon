@@ -25,7 +25,7 @@ from .aggregation import aggregate, mean_aggregate, geo_mean_aggregate
 from .chaining import chain, unchain
 from .contributions import contributions, contributions_with_double_update
 from .double_update_methods import jan_adjust_weights, adjust_pre_doublelink
-from helpers import (
+from .helpers import (
     reindex_and_fill,
     period_window_fill,
     swap_columns,
@@ -34,26 +34,26 @@ from helpers import (
     axis_slice,
     index_attrs_as_frame,
 )
-from imputation import (
+from .imputation import (
     impute_base_prices,
     get_base_prices,
     get_quality_adjusted_prices,
 )
-from index_methods import calculate_index
-from pipelines import index_calculator
-from re_reference import (
+from .index_methods import calculate_index
+from .pipelines import index_calculator
+from .re_reference import (
     set_reference_period,
     set_index_range,
     full_index_to_in_year_indices,
     in_year_indices_to_full_index,
 )
-from rounding import round_and_adjust
-from stat_compilers import (
+from .rounding import round_and_adjust
+from .stat_compilers import (
     get_index_and_growth_stats,
     get_reference_table_stats,
 )
-from uprate import uprate
-from weights import get_weight_shares, reindex_weights_to_indices
+from .uprate import uprate
+from .weights import get_weight_shares, reindex_weights_to_indices
 
 
 __doc__ = """
