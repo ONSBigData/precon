@@ -29,9 +29,6 @@ lint:
 test:
 	pytest
 
-test-all:
-	tox
-
 coverage:
 	coverage run --source precon setup.py test
 	coverage report -m
