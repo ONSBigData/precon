@@ -3,5 +3,4 @@ coverage==5.3
 flake8
 pytest
 sphinx
-tox
 twine
