@@ -67,7 +67,7 @@ def swap_columns(df, col1, col2):
 
 
 def reduce_cols(df, newcol, cols, reduce_func, drop=False, swap=None):
-    """Creates a new column as a reduction of any number of given 
+    """Creates a new column as a reduction of any number of given
     columns. Options to choose the reduce function (such as mean or
     sum), drop the given columns, and swap the new column inplace
     with one of the reduced columns.
@@ -126,7 +126,7 @@ def _get_end_year(start_year):
 
 
 def index_attrs_as_frame(df, attr=None, axis=0):
-    """ 
+    """
     Returns a DataFrame of index attributes (or values if not
     specified), the same shape as the given DataFrame.
 

@@ -23,7 +23,7 @@ def set_index_range(df, start=None, end=None):
 
     subset = df.loc[start:end]
 
-    if type(df) == type(pd.Series()):
+    if isinstance(df, pd.Series):
         subset.iloc[0] = 100
     else:
         subset.iloc[0, :] = 100
@@ -47,7 +47,7 @@ def full_index_to_in_year_indices(full_index):
 
 
 def in_year_indices_to_full_index(in_year_indices):
-    """Converts a dictionary of in-year indices into a single 
+    """Converts a dictionary of in-year indices into a single
     unchained index.
     """
     full_index = pd.concat(in_year_indices).fillna(0).droplevel(0)

@@ -5,8 +5,6 @@ Created on Mon Jan 27 17:49:18 2020
 @author: Mitchell Edmunds
 @title: Chaining functions
 """
-from datetime import datetime
-
 import pandas as pd
 
 
@@ -14,10 +12,10 @@ def chain(indices, double_link=False, base_periods=None):
     """
     Chain the indices using direct (fixed-base) chaining.
 
-    By default, chains the indices using the direct (fixed-base) 
+    By default, chains the indices using the direct (fixed-base)
     chaining with a single annual chainlink. Double annual chainlinking
-    can be implemented using the `double_link` argument. Alternatively, 
-    the user can override and specify their own base periods. The 
+    can be implemented using the `double_link` argument. Alternatively,
+    the user can override and specify their own base periods. The
     function can also handle quarterly series if base_periods given.
 
     Parameters
@@ -62,10 +60,10 @@ def unchain(indices, double_link=False, base_periods=None):
     """
     Unchain the indices using direct (fixed-base) chaining.
 
-    By default, unchains the indices using the direct (fixed-base) 
+    By default, unchains the indices using the direct (fixed-base)
     chaining with a single annual chainlink. Double annual chainlinking
-    can be implemented using the `double_link` argument. Alternatively, 
-    the user can override and specify their own base months. The 
+    can be implemented using the `double_link` argument. Alternatively,
+    the user can override and specify their own base months. The
     function can also handle quarterly series if base_periods given.
 
     Parameters
@@ -143,7 +141,9 @@ def handle_base_indices_arg(base_periods):
             return [base_periods]
         else:
             raise ValueError(
-                f"base_periods must be int or list of ints, got type {type(base_periods)}")
+                "base_periods must be int or list of ints,"
+                f" got type {type(base_periods)}"
+            )
     else:
         return base_periods
 
@@ -151,7 +151,9 @@ def handle_base_indices_arg(base_periods):
 def validate_quarterly_base_periods(base_periods):
     if not all([base in range(1, 5) for base in base_periods]):
         raise ValueError(
-            "Given base periods for a quarterly index must be between 1 and 4.")
+            "Given base periods for a quarterly index must be between"
+            " 1 and 4."
+        )
 
 
 def validate_monthly_base_periods(base_periods):
@@ -165,6 +167,7 @@ def check_series_freq(indices, freq):
     try:
         indices.index.freq = freq
         return True
+    # TODO: Catch the right errors with these except clauses.
     except:
         try:
             indices.index.freq = freq + 'S'

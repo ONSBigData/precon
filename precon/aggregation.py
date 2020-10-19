@@ -1,5 +1,5 @@
 """
-Common aggregation functions.    
+Common aggregation functions.
 """
 import numpy as np
 import pandas as pd

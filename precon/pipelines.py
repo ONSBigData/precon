@@ -28,7 +28,7 @@ def index_calculator(
     ----------
     prices: DataFrame
         The prices with which to calculate the index.
-    method: {'jevons', 'dutot', 'carli', 'laspeyres', 'geometric_laspeyres'}, str or callable, defaults to 'jevons'
+    method: {'jevons', 'dutot', 'carli', 'laspeyres', 'geometric_laspeyres'}
         Method to calculate the index.
     shift_imputed_values: bool, defaults to True
         True if imputed values are shifted onto the following period.

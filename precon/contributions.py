@@ -1,4 +1,4 @@
-""" 
+"""
 Functions to calculate contributions to growth.
 """
 
@@ -10,7 +10,7 @@ from precon.weights import get_weight_shares, reindex_weights_to_indices
 
 def contributions(components, weights, index, double_update=False):
     """
-    Calculates the growth contributions of the index components to 
+    Calculates the growth contributions of the index components to
     overall growth of a double annual chainlinked index.
 
     Parameters
@@ -25,7 +25,7 @@ def contributions(components, weights, index, double_update=False):
     Returns
     -------
     DataFrame
-        The contributions of each component to overall index growth.        
+        The contributions of each component to overall index growth. 
     """
     weights = get_weight_shares(weights)
     weights = reindex_weights_to_indices(weights, components)

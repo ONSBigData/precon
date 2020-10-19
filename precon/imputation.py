@@ -41,7 +41,7 @@ def impute_base_prices(
         Prices to get imputed base prices for.
     to_impute: DataFrame
         A boolean mask of where to impute.
-    index_method: {'jevons', 'dutot', 'carli', 'laspeyres', 'geometric_laspeyres'}, str or callable, defaults to 'jevons'
+    index_method: {'jevons', 'dutot', 'carli', 'laspeyres', 'geometric_laspeyres'}
         Method to calculate the index to impute with.
     shift_imputed_values: bool, defaults to True
         True if imputed values are shifted onto the following period.

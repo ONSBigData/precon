@@ -2,7 +2,7 @@
 A set of functions for price uprating.
 
 * uprate - Returns uprated expenditures given indices and base month.
-* get_uprating_factor - Return the expenditure uprating factors for a 
+* get_uprating_factor - Return the expenditure uprating factors for a
         given base month.
 """
 
