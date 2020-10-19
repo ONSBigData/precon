@@ -70,11 +70,11 @@ def impute_base_prices(
     if weights is not None:
         weights = reindex_weights_to_indices(weights, prices, axis=axis)
         weights = weights.mask(to_impute, 0)
-    
+
     # Get the base prices to start with from given base period.
     start_prices = get_base_prices(prices, base_period, axis=axis, ffill=False)
     base_prices = start_prices.copy()
-    
+
     if not shift_imputed_values:
         # Shifting because base prices need to apply to the
         # following base period. Shifts later on after base prices have
@@ -117,10 +117,10 @@ def impute_base_prices(
             method=index_method,
             axis=flip(axis),
         )
-        
+
         imputed_values = prices.div(index, axis) * 100
         base_prices = base_prices.mask(to_impute, imputed_values)
-    
+
     # Groupby year prevents discontinued prices filling beyond the year
     # that they are discontinued
     # TODO: Get this to work for user defined freq
@@ -129,13 +129,13 @@ def impute_base_prices(
         base_prices.groupby(lambda x: x.year, axis=axis)
         .fillna(method='ffill', axis=axis)
     )
-    
+
     if shift_imputed_values:
         # Shift the base prices one period ahead so the price in the
         # next base period uses the previous base price for calculating
         # the index value. Also shifts imputed base prices here.
         base_prices = base_prices.shift(1, axis=axis)
-    
+
     # Back fill the first Jan
     return base_prices.fillna(start_prices)
 
@@ -156,10 +156,10 @@ def get_base_prices(
 
     # Fill all except base months with NA
     base_prices = prices.copy()
-    
+
     slice_ = axis_slice(~bases, axis)
     base_prices.iloc[slice_] = np.nan
-    
+
     if ffill:
         return base_prices.ffill(axis)
     else:
@@ -172,7 +172,7 @@ def get_quality_adjusted_prices(
         adjustments: pd.DataFrame,
         axis: pd._typing.Axis = 1,
         ) -> pd.DataFrame:
-    """Applies the quality adjustments to get new base prices."""    
+    """Applies the quality adjustments to get new base prices."""
     adjustment_factor = prices.div(prices - adjustments)
 
     return base_prices * adjustment_factor.cumprod(axis)

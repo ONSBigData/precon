@@ -69,7 +69,7 @@ def index_calculator(
             index_method=index_method,
             shift_imputed_values=shift_imputed_values,
             base_period=base_period,
-            axis=axis, 
+            axis=axis,
             weights=weights,
             adjustments=adjustments,
         )

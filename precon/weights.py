@@ -15,7 +15,7 @@ def get_weight_shares(
     # TODO: test precision
     if not weights.sum(axis).round(5).eq(1).all():
         return weights.div(weights.sum(axis), axis=flip(axis))
-    
+
     else:   # It is already weight shares so return input
         return weights
 
@@ -34,7 +34,7 @@ def reindex_weights_to_indices(
         weights = weights.to_frame()
         if axis == 0:
             weights = weights.T
-            
+
     if not weights.axes[axis].equals(indices.axes[axis]):
         return reindex_and_fill(weights, indices, 'ffill', axis)
     else:

@@ -16,7 +16,7 @@ def get_index_and_growth_stats(
         ) -> Dict[str, FrameOrSeries]:
     """Returns the monthly chained index referenced to the given period
     and the index growth as a dictionary.
-    
+
     Parameters
     ----------
     index : Series
@@ -28,30 +28,30 @@ def get_index_and_growth_stats(
         Boolean switch for annual chainlinking.
     prefix : str
         A prefix to add to the keys of the output dict.
-        
+
     Returns
     -------
     dict of {str : Series}
         The monthly index and growth stats for publication.
     """
     stats = dict()
-    
+
     stats['idx'] = index.copy()
-    
+
     # Chain the index and reference to given reference period.
     chained_index = chain(index, double_link=double_link)
     stats[f'idx_r{reference_period}'] = set_reference_period(
         chained_index,
         reference_period,
     )
-    
+
     # Get the annual MoM growth and drop the first year of NaNs
     stats['idx_growth'] = chained_index.pct_change(12) * 100
     stats['idx_growth'].dropna(inplace=True)
-    
+
     # Adds prefix to the keys of the output dict
     stats = {prefix + k: v for k, v in stats.items()}
-    
+
     return stats
 
 
@@ -65,7 +65,7 @@ def get_reference_table_stats(
         ) -> Dict[str, FrameOrSeries]:
     """ 
     Produces the unrounded statistics for the reference tables.
-    
+
     Given the parameters, returns a dictionary of the unrounded
     statistics with the following keys:
         * subidx : Chained and referenced sub-indices.
@@ -76,7 +76,7 @@ def get_reference_table_stats(
         * idx_growth : The chained headline index year-on-year growth.
         * contributions : The contributions to growth for each
                           sub-index.
-    
+
     Parameters
     ----------
     sub_indices : DataFrame
@@ -92,16 +92,16 @@ def get_reference_table_stats(
         Boolean switch for annual chainlinking. True for double link.
     parts_per : int, default 100
         The multiplier for published weights.
-    
+
     Returns
     -------
     dict of {str : Series or DataFrame}
         The statistics for the reference tables accessed via the keys.
     """
     pub_stats = dict()
-        
+
     pub_stats['weights'] = weight_shares * parts_per
-    
+
     # Get the chained index and growth stats for the sub indices and
     # the headline index.
     pub_stats.update(
@@ -112,18 +112,18 @@ def get_reference_table_stats(
     pub_stats.update(
         get_index_and_growth_stats(headline_index, reference_period)
     )
-    
+
     # Select the contributions method based on the double_link
     # parameter and then calculate
     if double_link:
         contributions_method = contributions_with_double_update
     else:
         contributions_method = contributions
-    
+
     pub_stats['contributions'] = contributions_method(
         components=sub_indices,
         weights=weight_shares,
         index=headline_index,
     )
-    
+
     return pub_stats

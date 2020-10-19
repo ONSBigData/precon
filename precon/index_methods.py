@@ -48,12 +48,12 @@ def calculate_index(
         'geometric_laspeyres': geometric_laspeyres_index,
     }
     index_method = index_method_mapper.get(method)
-    
+
     if method in ['laspeyres', 'geometric_laspeyres']:
         return index_method(prices, base_prices, weights, axis)
     else:
         return index_method(prices, base_prices, axis)
-    
+
 
 def jevons_index(
         prices: pd.DataFrame,
