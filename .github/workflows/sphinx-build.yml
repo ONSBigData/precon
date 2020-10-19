@@ -12,11 +12,11 @@ jobs:
         python -m pip install --upgrade pip
         pip install requirements.txt
     - name: Build docs
-    - uses: ammaraskar/sphinx-action@master
+      uses: ammaraskar/sphinx-action@master
       with:
         docs-folder: "docs/"
     - name: Upload docs
-    - uses: actions/upload-artifact@v1
+      uses: actions/upload-artifact@v1
       with:
         name: DocumentationHTML
         path: docs/_build/html/
