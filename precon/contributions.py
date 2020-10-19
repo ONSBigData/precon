@@ -25,7 +25,7 @@ def contributions(components, weights, index, double_update=False):
     Returns
     -------
     DataFrame
-        The contributions of each component to overall index growth. 
+        The contributions of each component to overall index growth.
     """
     weights = get_weight_shares(weights)
     weights = reindex_weights_to_indices(weights, components)
