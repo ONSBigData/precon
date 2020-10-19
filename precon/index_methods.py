@@ -1,5 +1,8 @@
 """
 A set of index methods and index helper functions.
+
+# TODO: Adjust calculate index (or each index method) to calculate base
+# TODO: prices if none are given.
 """
 from typing import Optional
 
