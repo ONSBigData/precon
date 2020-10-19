@@ -1,5 +1,5 @@
 """
-Common aggregation functions.    
+Common aggregation functions.
 """
 import numpy as np
 import pandas as pd
@@ -46,20 +46,20 @@ def aggregate(
         Axis along which the function is applied:
             * 0 or ‘index’: apply function to each column.
             * 1 or ‘columns’: apply function to each row.
-  
+
     Returns
     -------
     Series:
         The aggregated index.
     """
-    axis = _handle_axis(axis)    
+    axis = _handle_axis(axis)
 
     methods_lib = {
         'mean': mean_aggregate,
         'geomean': geo_mean_aggregate,
     }
     agg_method = methods_lib.get(method)
-    
+
     # Make sure that the indices and weights have the same time series
     # axis before aggregating.
     weights = reindex_weights_to_indices(weights, indices, flip(axis))
@@ -80,8 +80,8 @@ def mean_aggregate(
     # min_count set to 1 to prevent function returning 0 when all
     # values being summed are NA
     return indices.mul(weight_shares).sum(axis=axis, min_count=1)
-  
-    
+
+
 def geo_mean_aggregate(
         indices: pd.DataFrame,
         weight_shares: FrameOrSeriesUnion,

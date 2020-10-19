@@ -29,7 +29,7 @@ def calculate_index(
         The prices with which to calculate the index.
     base_prices: DataFrame
         The pre-calculated base prices for the index calculation.
-    method: {'jevons', 'dutot', 'carli', 'laspeyres', 'geometric_laspeyres'}, str or callable, defaults to 'jevons'
+    method: {'jevons', 'dutot', 'carli', 'laspeyres', 'geometric_laspeyres'}
         Method to calculate the index.
     axis : {0 or 'index', 1 or 'columns'}, defaults to 0
         The axis that holds the time series values.
@@ -51,12 +51,12 @@ def calculate_index(
         'geometric_laspeyres': geometric_laspeyres_index,
     }
     index_method = index_method_mapper.get(method)
-    
+
     if method in ['laspeyres', 'geometric_laspeyres']:
         return index_method(prices, base_prices, weights, axis)
     else:
         return index_method(prices, base_prices, axis)
-    
+
 
 def jevons_index(
         prices: pd.DataFrame,
