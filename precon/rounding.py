@@ -67,7 +67,7 @@ def _get_adjustments(obj, decimals):
     no_of_adjustments = int(errs.round(decimals) * rounding_factor)
 
     # Create a zeros Series to fill with adjustments
-    adjustments = pd.Series(dtype=float).reindex_like(obj)
+    adjustments = pd.Series(dtype=float).reindex_like(obj).fillna(0)
 
     to_adjust = _get_values_to_adjust(obj, decimals, no_of_adjustments)
     adjustments.loc[to_adjust] = adjustment * np.sign(no_of_adjustments)
