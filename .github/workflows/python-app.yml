@@ -42,7 +42,7 @@ jobs:
         pytest
     - name: Test coverage with coverage
       run: |
-        coverage run --source precon setup.py test
+        coverage run -m pytest precon setup.py test
         coverage report -m
         coverage html
     - uses: actions/upload-artifact@v1
