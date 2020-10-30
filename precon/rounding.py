@@ -79,10 +79,11 @@ def _get_values_to_adjust(values, decimals, no_of_adjustments):
     """Get the difference of each value from its rounded value and pick
     values to round by rank depending whether adjusting down or up.
     """
-    asc = True if np.sign(no_of_adjustments) == -1 else False
+    asc = (np.sign(no_of_adjustments) == -1)
 
     diff_ranked = (
-        values.subtract(values.round(decimals))
+        values
+        .subtract(values.round(decimals))
         .sort_values(ascending=asc)
     )
 
