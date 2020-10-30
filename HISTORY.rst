@@ -5,6 +5,11 @@
 History
 -------
 
+0.6.2   (2020-10-30)
+++++++++++++++++++++
+
+* Bug fix: fixed an issue with the `round_and_adjust` function.
+
 0.6.1   (2020-10-15)
 ++++++++++++++++++++
 
