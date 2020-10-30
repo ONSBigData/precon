@@ -35,6 +35,8 @@ setup(
     package_dir={'precon': 'precon'},
     include_package_data=True,
     install_requires=[
+        'pandas',
+        'numpy',
     ],
     license='MIT',
     zip_safe=False,

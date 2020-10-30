@@ -5,7 +5,7 @@ from pandas._typing import Dict, FrameOrSeries
 
 from precon.chaining import chain
 from precon.re_reference import set_reference_period
-from .contributions import contributions, contributions_with_double_update
+from precon.contributions import contributions, contributions_with_double_update
 
 
 def get_index_and_growth_stats(
