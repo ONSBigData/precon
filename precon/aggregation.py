@@ -71,6 +71,61 @@ def aggregate(
     return agg_method(indices, weight_shares, axis)
 
 
+def aggregate_level(
+        indices: pd.DataFrame,
+        weights: pd.DataFrame,
+        aggregate_on: list,
+        method: str = 'mean',
+        axis: int = 1,
+        ) -> pd.DataFrame:
+    """
+    Aggregates the indices for each combination of level values
+    for the levels given by aggregate_on.
+    """  
+    return indices.groupby(aggregate_on, axis).apply(
+        aggregate, weights, method, axis,
+    )
+
+
+def aggregate_up_hierarchy(
+        indices: pd.DataFrame, 
+        weights: pd.DataFrame,
+        class_levels: list = None,
+        axis: int = 1,
+        ) -> dict:
+    """
+    Returns the aggregate at each level of the hierarchy defined by
+    class_levels as a dict, with the level names as keys (except the
+    lowest level). 
+    
+    Requires a MultiIndex. Default behaviour sets class_levels to the 
+    MultiIndex level names.
+    """
+    # Initialise class levels and aggregate on
+    if not class_levels:
+        class_levels = indices.axes[axis].names
+    
+    aggregate_on = list(class_levels)
+    hierarchy = {}
+    
+    # Loop through one less times than number of levels.
+    for i in range(len(class_levels) - 1):
+        
+        # Pop the first level to get the levels to aggregate_on for
+        # this run, then set the key as the next level up.
+        aggregate_on.pop(-1)
+        key = aggregate_on[-1]
+        
+        aggregated = aggregate_level(indices, weights, aggregate_on, axis)
+        hierarchy[key] = aggregated
+        
+        # Set indices and weights for the next loop
+        indices = aggregated
+        weights = weights.groupby(aggregate_on, axis).sum()
+        
+    return hierarchy
+
+
 def mean_aggregate(
         indices: pd.DataFrame,
         weight_shares: FrameOrSeriesUnion,
