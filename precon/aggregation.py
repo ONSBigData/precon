@@ -76,7 +76,7 @@ def aggregate_level(
         weights: pd.DataFrame,
         aggregate_on: list,
         method: str = 'mean',
-        axis: int = 1,
+        axis: Axis = 1,
         ) -> pd.DataFrame:
     """
     Aggregates the indices for each combination of level values
@@ -91,7 +91,8 @@ def aggregate_up_hierarchy(
         indices: pd.DataFrame, 
         weights: pd.DataFrame,
         class_levels: list = None,
-        axis: int = 1,
+        method: str = 'mean',
+        axis: Axis = 1,
         ) -> dict:
     """
     Returns the aggregate at each level of the hierarchy defined by
@@ -101,14 +102,12 @@ def aggregate_up_hierarchy(
     Requires a MultiIndex. Default behaviour sets class_levels to the 
     MultiIndex level names.
     """
-    # Initialise class levels and aggregate on
     if not class_levels:
         class_levels = indices.axes[axis].names
     
     aggregate_on = list(class_levels)
     hierarchy = {}
     
-    # Loop through one less times than number of levels.
     for i in range(len(class_levels) - 1):
         
         # Pop the first level to get the levels to aggregate_on for
@@ -116,10 +115,12 @@ def aggregate_up_hierarchy(
         aggregate_on.pop(-1)
         key = aggregate_on[-1]
         
-        aggregated = aggregate_level(indices, weights, aggregate_on, axis)
+        aggregated = aggregate_level(
+            indices, weights, aggregate_on, method, axis,
+        )
         hierarchy[key] = aggregated
         
-        # Set indices and weights for the next loop
+        # Set indices and weights for the next loop.
         indices = aggregated
         weights = weights.groupby(aggregate_on, axis).sum()
         
@@ -146,6 +147,7 @@ def geo_mean_aggregate(
     # min_count set to 1 to prevent function returning 0 when all
     # values being summed are NA
     return np.exp(
-        np.log(indices).mul(weight_shares)
+        np.log(indices)
+        .mul(weight_shares)
         .sum(axis=axis, min_count=1)
     )
