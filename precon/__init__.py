@@ -1,7 +1,11 @@
 # flake8: noqa
 
 from precon.adjustments import jan_adjustment
-from precon.aggregation import aggregate, mean_aggregate, geo_mean_aggregate
+from precon.aggregation import (
+    aggregate,
+    aggregate_level,
+    aggregate_up_hierarchy,
+)
 from precon.chaining import chain, unchain
 from precon.contributions import contributions, contributions_with_double_update
 from precon.double_update_methods import jan_adjust_weights, adjust_pre_doublelink

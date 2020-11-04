@@ -60,8 +60,8 @@ def aggregate(
     axis = _handle_axis(axis)
 
     methods_lib = {
-        'mean': mean_aggregate,
-        'geomean': geo_mean_aggregate,
+        'mean': _mean_aggregate,
+        'geomean': _geo_mean_aggregate,
     }
     agg_method = methods_lib.get(method)
 
@@ -187,7 +187,7 @@ def aggregate_up_hierarchy(
     return hierarchy
 
 
-def mean_aggregate(
+def _mean_aggregate(
         indices: pd.DataFrame,
         weight_shares: FrameOrSeriesUnion,
         axis: int = 1,
@@ -198,7 +198,7 @@ def mean_aggregate(
     return indices.mul(weight_shares).sum(axis=axis, min_count=1)
 
 
-def geo_mean_aggregate(
+def _geo_mean_aggregate(
         indices: pd.DataFrame,
         weight_shares: FrameOrSeriesUnion,
         axis: int = 1,
