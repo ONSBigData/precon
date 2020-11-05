@@ -35,9 +35,9 @@ src = "precon/__init__.py"
 # run after the files have been patched
 # and before the git commit is made
 
-[[before_commit]]
-name = "check history"
-cmd = "grep -q {new_version} HISTORY.rst"
+# [[before_commit]]
+# name = "check history"
+# cmd = "grep -q {new_version} HISTORY.rst"
 
 # Or run some commands after the git tag and the branch
 # have been pushed:
