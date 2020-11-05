@@ -10,8 +10,8 @@ History
 
 Added new aggregation functionality:
 
-* Added the `aggregate_level`_ function to aggregate by a grouping.
-* | Added the `aggregate_up_hierarchy`_ function to aggregate up a
+* Added the :python`aggregate_level` function to aggregate by a grouping.
+* | Added the :python`aggregate_up_hierarchy` function to aggregate up a
   | hierarchy given by MultiIndex levels.
 
 
