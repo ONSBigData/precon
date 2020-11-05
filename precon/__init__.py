@@ -42,7 +42,7 @@ from precon.weights import get_weight_shares, reindex_weights_to_indices
 
 __author__ = 'Mitchell Edmunds'
 __email__ = 'mitchell.edmunds@ext.ons.gov.uk'
-__version__ = '0.6.3-alpha.0'
+__version__ = '0.7.0-alpha.0'
 __all__ = [
     'adjustments',
     'aggregation',
