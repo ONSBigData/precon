@@ -36,8 +36,8 @@ src = "precon/__init__.py"
 # and before the git commit is made
 
 [[before_commit]]
-name = "check changelog"
-cmd = "grep -q {new_version} Changelog.rst"
+name = "check history"
+cmd = "grep -q {new_version} HISTORY.rst"
 
 # Or run some commands after the git tag and the branch
 # have been pushed:
