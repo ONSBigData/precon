@@ -5,6 +5,16 @@
 History
 -------
 
+0.6.3   (2020-11-05)
+++++++++++++++++++++
+
+Added new aggregation functionality:
+
+* Added the `aggregate_level`_ function to aggregate by a grouping.
+* | Added the `aggregate_up_hierarchy`_ function to aggregate up a
+  | hierarchy given by MultiIndex levels.
+
+
 0.6.2   (2020-10-30)
 ++++++++++++++++++++
 
@@ -15,7 +25,6 @@ History
 
 * Bug fix: fixed broken API definition.
 * Updated README to reflect new installation instructions.
-
 
 
 0.6.0   (2020-10-14)
