@@ -5,7 +5,7 @@
 History
 -------
 
-0.6.3   (2020-11-05)
+0.7.0   (2020-11-05)
 ++++++++++++++++++++
 
 Added new aggregation functionality:
