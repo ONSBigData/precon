@@ -1,5 +1,5 @@
 # Uncomment this if your project is hosted on GitHub:
-github_url = https://github.com/ONSBigData/precon/
+github_url = "https://github.com/ONSBigData/precon/"
 
 [version]
 current = "0.6.2"
