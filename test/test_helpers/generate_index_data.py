@@ -1,5 +1,6 @@
 """Script to generate index data."""
-from typing import Tuple, Optional, Union, Sequence
+import collections.abc
+from typing import Tuple, Optional, Union, Sequence, Mapping
 from warnings import warn
 
 import numpy as np
@@ -7,14 +8,20 @@ import pandas as pd
 from pandas._typing import Label
 
 IndexLabel = Union[Label, Sequence[Label]]
+NestedHierarchy = Union[
+    Mapping[str, Sequence[str]],
+    Mapping[str, Mapping[str, Sequence[str]]],
+]
+
+# The numpy random generator.
+RNG = np.random.default_rng(34)
 
 YEARS = 2
-BASE_PERIOD = 3
+BASE_PERIOD = 1
 FREQ = 'M'
 YEAR_BEGIN = 2017
 PERIODS = 12
 INDEXES = 3
-GROUPS = ['A', 'B', 'C']
 HIERARCHY = {
     'cpi': {
         'cheese': ['A', 'B', 'C'],
@@ -23,15 +30,57 @@ HIERARCHY = {
     }
 }
 
-if (PERIODS > 12) & (FREQ == 'M'):
-    warn("The settings given will create duplicate time periods.")
 
+def create_hiearchy_of_indices(
+    rng: np.random.Generator,
+    hierarchy: NestedHierarchy,
+    year_begin: int,
+    base_period: int,
+    periods: int,
+    freq: str,
+    no_of_years: int,
+) -> pd.DataFrame:
+    """ """      
+    dfs = []
+    for _, values in hierarchy.items():
+        
+        if isinstance(values, collections.abc.Sequence):
+            
+            size = (periods, len(values))
+            dfs.append(
+                create_multi_year_index(
+                    rng,
+                    size,
+                    year_begin,
+                    base_period,
+                    periods,
+                    freq,
+                    no_of_years,
+                    column_headers=values,
+                )
+            )
+        else:
+             # Call the function recursively.
+            dfs = create_hiearchy_of_indices(
+                rng,
+                values,     # Values is the new hierarchy
+                year_begin,
+                base_period,
+                periods,
+                freq,
+                no_of_years,
+            )
+    
+    dfs = [dfs] if not isinstance(dfs, list) else dfs
+    
+    return pd.concat(dfs, axis=1, keys=hierarchy.keys())
+            
 
 def get_index_growth(
     rng: np.random.Generator, 
     size: Tuple[int, int],
 ) -> np.ndarray:
-    """ """
+    """Calculates cumulative growth to mimic index growth."""
     # For indices, they are only decreasing a fifth of the time
     signs = np.sign(rng.random(size) - 0.2)
     
@@ -48,7 +97,12 @@ def generate_index(
     rng: np.random.Generator,
     size: Tuple[int, int],
 ) -> np.ndarray:
-    """ """
+    """Generates fake indices.
+    
+    Works by taking a matrix of all 100 values and adds simulated
+    cumulative growth to each value. The size argument controls the
+    number of periods (size[0]) and the number of indices (size[1]).
+    """
     idx = np.ones(size) * 100
     growth = get_index_growth(rng, size)
     
@@ -61,7 +115,7 @@ def create_period_index(
     periods: int,
     freq: str,
 ) -> pd.PeriodIndex:
-    """ """
+    """Creates a period index."""
     # Build the index start period.
     start = str(year_begin) + '-' + str(base_period)
     return pd.period_range(start=start, periods=periods, freq=freq)
@@ -76,7 +130,7 @@ def create_index_dataframe(
     freq: str,
     column_headers: Optional[IndexLabel] = None,
 ) -> pd.DataFrame:
-    """ """
+    """Creates a DataFrame of indices given by size."""
     period_idx = create_period_index(year_begin, base_period, periods, freq)
     ts_idx = period_idx.to_timestamp()
     
@@ -85,33 +139,42 @@ def create_index_dataframe(
     return pd.DataFrame(indices, index=ts_idx, columns=column_headers)
 
 
-if __name__ == "__main__":
-    rng = np.random.default_rng(34)
+def create_multi_year_index(
+    rng: np.random.Generator,
+    size: Tuple[int, int],
+    year_begin: int,
+    base_period: int,
+    periods: int,
+    freq: str,
+    no_of_years: int,
+    column_headers: Optional[IndexLabel] = None,
+) -> pd.DataFrame:
+    """ """
+    return pd.concat([
+        create_index_dataframe(
+            rng,
+            size,
+            year_begin + i,
+            base_period,
+            periods,
+            freq,
+            column_headers,
+        )
+        for i in range(no_of_years)
+    ])
     
-    group_dfs = []
-    for _ in range(len(GROUPS)):
-        
-        size = (PERIODS, INDEXES)
-            
-        index_dfs = [
-            create_index_dataframe(
-                rng,
-                size,
-                YEAR_BEGIN + i,
-                BASE_PERIOD,
-                PERIODS,
-                FREQ,
-            )
-            for i in range(YEARS)
-        ]
-        
-    
-        # Concat the DataFrames to get our output.
-        ts_dfs = pd.concat(index_dfs)
-        
-        group_dfs.append(ts_dfs)
-        
-    output = pd.concat(group_dfs, axis=1, keys=GROUPS)
+
+
+if __name__ == "__main__":    
+    output = create_hiearchy_of_indices(
+        RNG,
+        HIERARCHY,
+        YEAR_BEGIN,
+        BASE_PERIOD,
+        PERIODS,
+        FREQ,
+        YEARS,
+    )
         
 
     print(output)
