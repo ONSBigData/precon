@@ -47,3 +47,4 @@ docs/_build
 
 # Spyder
 *.spyproject/
+.vscode/
