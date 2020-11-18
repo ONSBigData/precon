@@ -1,4 +1,4 @@
-test/test_data/*
+test/test_data/*/*.txt
 .cache
 
 *.py[cod]
