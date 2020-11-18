@@ -1,4 +1,6 @@
+# Ignore txt files in test data
 test/test_data/*/*.txt
+
 .cache
 
 *.py[cod]
