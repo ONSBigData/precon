@@ -22,6 +22,7 @@ FREQ = 'M'
 YEAR_BEGIN = 2017
 PERIODS = 12
 INDEXES = 3
+# COLUMN_HEADERS = range(3)
 HIERARCHY = {
     'cpi': {
         'cheese': ['A', 'B', 'C'],
@@ -46,11 +47,9 @@ def create_hiearchy_of_indices(
         
         if isinstance(values, collections.abc.Sequence):
             
-            size = (periods, len(values))
             dfs.append(
                 create_multi_year_index(
                     rng,
-                    size,
                     year_begin,
                     base_period,
                     periods,
@@ -123,7 +122,6 @@ def create_period_index(
 
 def create_index_dataframe(
     rng: np.random.Generator,
-    size: Tuple[int, int],
     year_begin: int,
     base_period: int,
     periods: int,
@@ -134,6 +132,7 @@ def create_index_dataframe(
     period_idx = create_period_index(year_begin, base_period, periods, freq)
     ts_idx = period_idx.to_timestamp()
     
+    size = (periods, len(column_headers))
     indices = generate_index(rng, size)
     
     return pd.DataFrame(indices, index=ts_idx, columns=column_headers)
@@ -141,7 +140,6 @@ def create_index_dataframe(
 
 def create_multi_year_index(
     rng: np.random.Generator,
-    size: Tuple[int, int],
     year_begin: int,
     base_period: int,
     periods: int,
@@ -153,7 +151,6 @@ def create_multi_year_index(
     return pd.concat([
         create_index_dataframe(
             rng,
-            size,
             year_begin + i,
             base_period,
             periods,
