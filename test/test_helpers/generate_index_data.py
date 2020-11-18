@@ -1,6 +1,7 @@
 """Script to generate index data."""
 import collections.abc
-from typing import Tuple, Optional, Union, Sequence, Mapping
+import os
+from typing import Tuple, Union, Sequence, Mapping
 
 import numpy as np
 import pandas as pd
@@ -16,10 +17,10 @@ NestedHierarchy = Union[
 RNG = np.random.default_rng(34)
 
 NO_OF_YEARS = 2
-BASE_PERIOD = 1
+BASE_PERIODS = [1]
 FREQ = 'M'
 YEAR_BEGIN = 2017
-PERIODS = 3
+PERIODS = 13
 INDEXES = 3
 HEADERS = range(3)
 HIERARCHY = {
@@ -30,6 +31,8 @@ HIERARCHY = {
     }
 }
 OUT_DIR = r"..\test_data\aggregate"
+INDICES_FILE_NAME = "aggregate_indices_hierarchy.csv"
+WEIGHTS_FILE_NAME = "aggregate_weights_hierarchy.csv"
 
 
 def create_hiearchy(
@@ -92,18 +95,19 @@ def generate_index(
 def generate_weights(
     rng: np.random.Generator,
     year_begin: int,
-    base_period: int,
+    base_periods: Sequence[int],
     no_of_years: int,
     headers: IndexLabels,
 ) -> np.ndarray:
     """ """
-    size = (no_of_years, len(headers))
+    x = no_of_years * len(base_periods)
+    y = len(headers)
 
-    first_year_weights = rng.integers(1, 20, (1, size[1]))
+    first_year_weights = rng.integers(1, 20, (1, y))
     # Rearrange to length needed.
-    weights = np.tile(first_year_weights, (no_of_years, 1))
+    weights = np.tile(first_year_weights, (x, 1))
 
-    change = RNG.integers(-2, 2, size, endpoint=True)
+    change = RNG.integers(-2, 2, (x, y), endpoint=True)
     change[0, :] = 0
 
     change = change.cumsum(axis=0)
@@ -115,7 +119,7 @@ def generate_weights(
 def create_weights_dataframe(
     rng: np.random.Generator,
     year_begin: int,
-    base_period: int,
+    base_periods: Sequence[int],
     no_of_years: int,
     headers: IndexLabels,
 ) -> pd.DataFrame:
@@ -123,13 +127,16 @@ def create_weights_dataframe(
     ts_idx = pd.to_datetime([
         join_year_month(year_begin + i, base_period)
         for i in range(no_of_years)
+        for base_period in base_periods
     ])
 
     weights = generate_weights(
-        rng, year_begin, base_period, no_of_years, headers,
+        rng, year_begin, base_periods, no_of_years, headers,
     )
 
-    return pd.DataFrame(weights, index=ts_idx, columns=headers)
+    df = pd.DataFrame(weights, index=ts_idx, columns=headers)
+
+    return df.shift(freq='MS')
 
 
 def join_year_month(year, month):
@@ -157,6 +164,10 @@ def create_index_dataframe(
     headers: IndexLabels,
 ) -> pd.DataFrame:
     """Creates a DataFrame of indices given by size."""
+    # Can't be more than 13 periods.
+    if (base_period + periods - 1) > 13:
+        periods = (base_period + periods) % 13
+
     period_idx = create_period_index(year_begin, base_period, periods, freq)
     ts_idx = period_idx.to_timestamp()
 
@@ -169,14 +180,14 @@ def create_index_dataframe(
 def create_multi_year_index(
     rng: np.random.Generator,
     year_begin: int,
-    base_period: int,
+    base_periods: Sequence[int],
     periods: int,
     freq: str,
     no_of_years: int,
     headers: IndexLabels,
 ) -> pd.DataFrame:
     """ """
-    return pd.concat([
+    df = pd.concat([
         create_index_dataframe(
             rng,
             year_begin + i,
@@ -186,29 +197,38 @@ def create_multi_year_index(
             headers,
         )
         for i in range(no_of_years)
+        for base_period in base_periods
     ])
+
+    return df.groupby(level=0).first()
+
+
+def add_suffix(fname, suffix):
+    """ """
+    name, extension = fname.split(".")
+    return name + "_" + suffix + "." + extension
 
 
 if __name__ == "__main__":
-    output = create_hiearchy(
+    indices = create_hiearchy(
         RNG,
         HIERARCHY,
         create_multi_year_index,
         year_begin=YEAR_BEGIN,
-        base_period=BASE_PERIOD,
+        base_periods=BASE_PERIODS,
         periods=PERIODS,
         freq=FREQ,
         no_of_years=NO_OF_YEARS,
     )
 
-    print(output)
+    print(indices)
 
     weights = create_hiearchy(
         RNG,
         HIERARCHY,
         create_weights_dataframe,
         year_begin=YEAR_BEGIN,
-        base_period=BASE_PERIOD,
+        base_periods=BASE_PERIODS,
         no_of_years=NO_OF_YEARS,
     )
 
