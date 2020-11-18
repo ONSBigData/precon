@@ -20,7 +20,7 @@ NO_OF_YEARS = 2
 BASE_PERIODS = [1]
 FREQ = 'M'
 YEAR_BEGIN = 2017
-PERIODS = 13
+PERIODS = 3
 INDEXES = 3
 HEADERS = range(3)
 HIERARCHY = {
@@ -35,7 +35,7 @@ INDICES_FILE_NAME = "aggregate_indices_hierarchy.csv"
 WEIGHTS_FILE_NAME = "aggregate_weights_hierarchy.csv"
 
 
-def create_hiearchy(
+def create_hierarchy(
     rng: np.random.Generator,
     hierarchy: NestedHierarchy,
     func,
@@ -51,7 +51,7 @@ def create_hiearchy(
         else:
             # If calues is not a list, call the function recursively
             # with values being the new hierarchy.
-            dfs = create_hiearchy(rng, values, func, **kwargs)
+            dfs = create_hierarchy(rng, values, func, **kwargs)
 
     # Convert dfs to list for concat, if not already.
     dfs = [dfs] if not isinstance(dfs, list) else dfs
@@ -203,6 +203,41 @@ def create_multi_year_index(
     return df.groupby(level=0).first()
 
 
+def reindex_and_fill(df, other, first='ffill', group_on=None, axis=0):
+    """Reindex and fill the DataFrame or Series by given index and axis.
+
+    Parameters
+    ----------
+    df : DataFrame
+        The DataFrame to reindex.
+    other : Object of the same data type
+        Its row or column indices are used to define the new indices of
+        the first parameter, depending on axis parameter.
+    first : str
+        Direction to fill first.
+    axis : {0 or ‘index’, 1 or ‘columns’}
+        Whether to compare by the index (0 or ‘index’) or columns
+        (1 or ‘columns’). For Series input, axis to match Series index
+        on.
+
+    Returns
+    -------
+    DataFrame
+        The reindexed and filled DataFrame.
+    """
+    reindexed = df.reindex(other.axes[axis], axis=axis)
+
+    if first == 'ffill':
+        def fill_func(x): return x.ffill(axis).bfill(axis)
+    elif first == 'bfill':
+        def fill_func(x): return x.bfill(axis).ffill(axis)
+
+    if group_on:
+        reindexed = reindexed.groupby(group_on)
+
+    return reindexed.apply(fill_func)
+
+
 def add_suffix(fname, suffix):
     """ """
     name, extension = fname.split(".")
@@ -210,7 +245,7 @@ def add_suffix(fname, suffix):
 
 
 if __name__ == "__main__":
-    indices = create_hiearchy(
+    indices = create_hierarchy(
         RNG,
         HIERARCHY,
         create_multi_year_index,
@@ -222,8 +257,9 @@ if __name__ == "__main__":
     )
 
     print(indices)
+    indices.to_csv(os.path.join(OUT_DIR, INDICES_FILE_NAME))
 
-    weights = create_hiearchy(
+    weights = create_hierarchy(
         RNG,
         HIERARCHY,
         create_weights_dataframe,
@@ -233,3 +269,15 @@ if __name__ == "__main__":
     )
 
     print(weights)
+    weights.to_csv(os.path.join(OUT_DIR, WEIGHTS_FILE_NAME))
+
+    if PERIODS != 13:
+        def group_on(x): return x.year
+
+    long_weights = reindex_and_fill(weights, indices, 'ffill', group_on)
+    long_weights.to_csv(
+        os.path.join(
+            OUT_DIR,
+            add_suffix(WEIGHTS_FILE_NAME, 'long'),
+        )
+    )
