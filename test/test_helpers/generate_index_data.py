@@ -18,22 +18,24 @@ NestedHierarchy = Union[
 RNG = np.random.default_rng(34)
 
 # Settings...
-NO_OF_YEARS = 2
+NO_OF_YEARS = 30
 YEAR_BEGIN = 2017
 BASE_PERIODS = [1]  # The base months
-PERIODS = 24     # The number of periods in the index
+PERIODS = 13     # The number of periods in the index
 FREQ = 'M'
 HEADERS = range(3)
-HIERARCHY = {
-    'top': {
-        'cheese': ['A', 'B', 'C'],
-        'beer': ['D', 'E'],
-        'wine': ['F', 'G'],
-    }
-}
+# HIERARCHY = {
+#     'top': {
+#         'cheese': ['A', 'B', 'C'],
+#         'beer': ['D', 'E'],
+#         'wine': ['F', 'G'],
+#     }
+# }
+alphabet_list = [l for l in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ']
+HIERARCHY = {k: alphabet_list for k in range(500)}
 OUT_DIR = r"..\test_data\aggregate"
-INDICES_FILE_NAME = "aggregate_indices_hierarchy.csv"
-WEIGHTS_FILE_NAME = "aggregate_weights_hierarchy.csv"
+INDICES_FILE_NAME = "big_indices.csv"
+WEIGHTS_FILE_NAME = "big_weights.csv"
 
 
 def create_hierarchy(
@@ -473,6 +475,8 @@ if __name__ == "__main__":
     # Save weights reindexed to indices.
     if PERIODS != 13:
         def group_on(x): return x.year
+    else:
+        group_on = None
 
     long_weights = reindex_and_fill(weights, indices, 'ffill', group_on)
     long_weights.to_csv(

@@ -1,6 +1,10 @@
 # Ignore txt files in test data
 test/test_data/*/*.txt
 
+# Ignore big data files.
+test/test_data/*/huge*
+test/test_data/*/big*
+
 .cache
 
 *.py[cod]
