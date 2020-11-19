@@ -21,7 +21,7 @@ RNG = np.random.default_rng(34)
 NO_OF_YEARS = 2
 YEAR_BEGIN = 2017
 BASE_PERIODS = [1]  # The base months
-PERIODS = 3     # The number of periods in the index
+PERIODS = 24     # The number of periods in the index
 FREQ = 'M'
 HEADERS = range(3)
 HIERARCHY = {
@@ -266,6 +266,7 @@ def create_index_dataframe(
     periods: int,
     freq: str,
     headers: IndexLabels,
+    chained: bool = False,
 ) -> pd.DataFrame:
     """Creates a DataFrame of indices for given size.
 
@@ -297,8 +298,9 @@ def create_index_dataframe(
     """
     # Can't be more than 13 periods. If it is, truncate periods by
     # taking the modulus.
-    if (base_period + periods - 1) > 13:
-        periods = (base_period + periods) % 13
+    if not chained:
+        if (base_period + periods - 1) > 13:
+            periods = (base_period + periods) % 13
 
     period_idx = create_period_index(year_begin, base_period, periods, freq)
     ts_idx = period_idx.to_timestamp()
@@ -417,7 +419,30 @@ def add_suffix(fname, suffix):
     return name + "_" + suffix + "." + extension
 
 
+def created_chained_monthly_indices(
+    rng: np.random.Generator,
+    year_begin: int,
+    base_period: int,
+    periods: int,
+    headers: IndexLabels,
+) -> pd.DataFrame:
+    """
+    Creates chained monthly indices for the given number of periods,
+    starting at the base period in year begin.
+    """
+    return create_index_dataframe(
+        rng,
+        year_begin,
+        base_period,
+        periods,
+        freq='M',
+        headers=headers,
+        chained=True,
+        )
+
+
 if __name__ == "__main__":
+    # Create hierarchy of within-year indices and save.
     indices = create_hierarchy(
         RNG,
         HIERARCHY,
@@ -432,6 +457,7 @@ if __name__ == "__main__":
     print(indices)
     indices.to_csv(os.path.join(OUT_DIR, INDICES_FILE_NAME))
 
+    # Create hierarchy of weights and save.
     weights = create_hierarchy(
         RNG,
         HIERARCHY,
@@ -444,6 +470,7 @@ if __name__ == "__main__":
     print(weights)
     weights.to_csv(os.path.join(OUT_DIR, WEIGHTS_FILE_NAME))
 
+    # Save weights reindexed to indices.
     if PERIODS != 13:
         def group_on(x): return x.year
 
