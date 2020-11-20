@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
-import pandas as pd
+from typing import Sequence, Union, Optional
 
+import pandas as pd
+from pandas._typing import Level
 
 def reindex_and_fill(df, other, first='ffill', axis=0):
     """Reindex and fill the DataFrame or Series by given index and axis.
@@ -156,3 +158,48 @@ def reduce_to_only_differing_periods(df, axis):
     series to only the periods where the values have changed.
     """
     return df[df.ne(df.shift(1, axis=axis))].dropna()
+
+
+def subset_shared_axis(
+        df: pd.DataFrame,
+        other: pd.DataFrame,
+        axis: int = 0,
+        droplevel: Optional[Union[Level, Sequence[Level]]] = None,
+        ) -> pd.DataFrame:
+    """Subsets a DataFrame by it's shared axis with the other.
+
+    Optional behaviour to drop levels of the other axis before
+    looking for the shared axis.
+
+    Parameters
+    ----------
+    df : DataFrame
+    other : Object of the same data type
+        Its indices on the given axis are used to define the subset of
+        indices for this object.
+    axis : {0, 1} int, default 0
+        The axis to subset the shared index.
+    droplevel : int, str, or list-like
+        If a string is given, must be the name of a level. If
+        list-like, elements must be names or positional indexes of
+        levels.
+
+    Returns
+    -------
+    DataFrame
+        The subsetted frame.
+
+    """
+    if not df.axes[axis].eq(other.axes[axis]):
+        
+        other_axis = other.axes[axis]
+        
+        if droplevel:
+            other_axis = other_axis.droplevel(droplevel)
+        
+        shared_axis = df.axes[axis].isin(other_axis)
+        return df.loc[axis_slice(shared_axis, axis)]
+    
+    else:
+        return df
+

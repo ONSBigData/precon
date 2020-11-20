@@ -12,7 +12,7 @@ from pandas._typing import (
 )
 
 from precon.weights import get_weight_shares, reindex_weights_to_indices
-from precon.helpers import flip
+from precon.helpers import flip, subset_shared_axis
 from precon._validation import _handle_axis
 
 
@@ -64,6 +64,10 @@ def aggregate(
         'geomean': _geo_mean_aggregate,
     }
     agg_method = methods_lib.get(method)
+    
+    # Subset the metadata axis to match those of indices, for quicker
+    # handling of function when applied by groupby.
+    weights = subset_shared_axis(weights, indices, axis)
 
     # Make sure that the indices and weights have the same time series
     # axis before aggregating.

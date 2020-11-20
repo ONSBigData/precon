@@ -11,7 +11,7 @@ import pandas as pd
 
 from precon._validation import _handle_axis
 from precon.index_methods import calculate_index
-from precon.helpers import flip, axis_slice
+from precon.helpers import flip, axis_slice, subset_shared_axis
 from precon.weights import reindex_weights_to_indices
 
 
@@ -64,6 +64,14 @@ def impute_base_prices(
     """
     axis = _handle_axis(axis)
 
+    # Subset the metadata axis to match those of indices, for quicker
+    # handling of function when applied by groupby.    
+    to_impute = subset_shared_axis(to_impute, prices, flip(axis))
+    if weights is not None:
+        weights = subset_shared_axis(weights, prices, flip(axis))
+    if adjustments is not None:
+        adjustments = subset_shared_axis(adjustments, prices, flip(axis))
+    
     # Ensure the weights are in the same shape as the prices and
     # exclude the prices to impute from the imputation index
     # calculation by setting weights to zero.
