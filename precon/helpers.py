@@ -190,7 +190,7 @@ def subset_shared_axis(
         The subsetted frame.
 
     """
-    if not df.axes[axis].eq(other.axes[axis]):
+    if not df.axes[axis].equals(other.axes[axis]):
         
         other_axis = other.axes[axis]
         
