@@ -29,27 +29,16 @@ def round_and_adjust(
     -------
     The rounded and adjusted values.
     """
-    # Choose the iter method based on the given axis
-    iter_dict = {
-        0: pd.DataFrame.iterrows,
-        1: pd.DataFrame.iteritems,
-    }
-    iter_method = iter_dict.get(axis)
-
-    if isinstance(obj, pd.core.series.Series):
+    if isinstance(obj, pd.Series):
 
         adjustments = _get_adjustments(obj, decimals)
 
-    elif isinstance(obj, pd.core.frame.DataFrame):
+    elif isinstance(obj, pd.DataFrame):
 
         # Create an empty DataFrame to fill with adjustments
-        adjustments = pd.DataFrame().reindex_like(obj)
-
-        for index, row in iter_method(obj):
-            # Create a selector based on the axis
-            slice_ = axis_slice(index, axis)
-
-            adjustments.loc[slice_] = _get_adjustments(row, decimals)
+        adjustments = obj.apply(
+            _get_adjustments, decimals=decimals, axis=axis,
+        )
 
     adjusted_obj = obj + adjustments
     return adjusted_obj.round(decimals)
