@@ -60,33 +60,27 @@ def _get_adjustments(obj: pd.Series, decimals: int) -> pd.Series:
 
     # Errors > 0.5 between rounded and unrounded means that adjustment
     # is needed.
-    errs = obj.subtract(obj.round(decimals)).sum()
-    no_of_adjustments = int(errs.round(decimals) * rounding_factor)
+    errs = obj.subtract(obj.round(decimals))
+    tot_err = errs.sum()
+
+    no_of_adjustments = int(tot_err.round(decimals) * rounding_factor)
 
     # Create a zeros Series to fill with adjustments.
     adjustments = pd.Series(dtype=float).reindex_like(obj).fillna(0)
 
     # Fill only those we need to adjust with an adjustment.
-    to_adjust = _get_values_to_adjust(obj, decimals, no_of_adjustments)
+    to_adjust = _get_values_to_adjust(errs, decimals, no_of_adjustments)
     adjustments.loc[to_adjust] = adjustment * np.sign(no_of_adjustments)
 
     return adjustments
 
 
-def _get_values_to_adjust(values, decimals, no_of_adjustments):
-    """Select top ranked values to adjust.
-
-    Get the difference of each value from its rounded value and pick
-    values to round by rank depending whether adjusting down or up.
-    """
+def _get_values_to_adjust(errs, decimals, no_of_adjustments):
+    """Return index keys where greatest rounding errors occur."""
     # Rank order changes depending on the sign of no_of_adjustments.
     asc = (np.sign(no_of_adjustments) == -1)
 
-    diff_ranked = (
-        values
-        .subtract(values.round(decimals))
-        .sort_values(ascending=asc)
-    )
+    diff_ranked = errs.sort_values(ascending=asc)
 
     # Select only as many as needed.
     return diff_ranked.index[range(0, abs(no_of_adjustments))]
