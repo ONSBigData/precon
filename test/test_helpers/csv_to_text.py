@@ -8,7 +8,9 @@ import pandas as pd
 from pandas._typing import TimestampConvertibleTypes
 
 # Define the directory to find CSVs, and optional output TXT directory.
-CSV_DIR = '/home/cdsw/tests/local_collection/test_data/unit_tests'
+test_dir = Path(__file__).parent.parent
+
+CSV_DIR = os.path.join(test_dir, "test_data", "rounding")
 TXT_DIR = CSV_DIR
 
 
@@ -68,7 +70,7 @@ def convert_all_csvs(
 
     """
     if not files:
-        files = glob.glob(CSV_DIR + '*.csv')
+        files = glob.glob(CSV_DIR + r'\*.csv')
     else:
         files = [os.path.join(CSV_DIR, file) for file in files]
 
