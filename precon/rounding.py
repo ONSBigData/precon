@@ -1,90 +1,86 @@
-"""
-Functions for special rounding methods. Includes function to round
-and adjust values to keep the sum of values the same.
-"""
+"""Functions for special rounding methods."""
 from typing import Union
 
 import numpy as np
 import pandas as pd
 
-from precon.helpers import axis_slice
+from precon._validation import _handle_axis
 
 
 def round_and_adjust(
-        obj: Union[pd.DataFrame, pd.Series],
+        vals: Union[pd.DataFrame, pd.Series],
         decimals: int,
         axis: int = 0,
         ) -> pd.DataFrame:
-    """
-    Rounds a set of values ensuring the rounded values sum to the same
-    total as the unrounded weights.
+    """Rounds values while keeping the sum the same by adjusting.
+
+    Ensures rounded values sum to the same value as unrounded values.
+    Uses the strategy of picking the values with the greatest
+    difference to their rounded values as the ones to adjust.
+
+    Otherwise known as constrained rounding.
 
     Parameters
     ----------
-    obj: Object with values to adjust.
-    decimals : Number of decimal places to round each column to.
-    axis : Axis to adjust on and preserve total.
+    vals: DataFrame or Series
+        Values to adjust.
+    decimals : int
+        Number of decimal places to round each column to.
+    axis : {0 or ‘index’, 1 or ‘columns’}, default 0
+        Axis along which the function is applied.
 
     Returns
     -------
-    The rounded and adjusted values.
+    DataFrame: The rounded and adjusted values.
+
     """
-    # Choose the iter method based on the given axis
-    iter_dict = {
-        0: pd.DataFrame.iterrows,
-        1: pd.DataFrame.iteritems,
-    }
-    iter_method = iter_dict.get(axis)
+    axis = _handle_axis(axis)
 
-    if isinstance(obj, pd.core.series.Series):
+    if isinstance(vals, pd.Series):
+        adjustments = _get_adjustments(vals, decimals)
 
-        adjustments = _get_adjustments(obj, decimals)
+    elif isinstance(vals, pd.DataFrame):
+        adjustments = vals.apply(_get_adjustments, axis, args=[decimals])
 
-    elif isinstance(obj, pd.core.frame.DataFrame):
+    adjusted_vals = vals + adjustments
 
-        # Create an empty DataFrame to fill with adjustments
-        adjustments = pd.DataFrame().reindex_like(obj)
-
-        for index, row in iter_method(obj):
-            # Create a selector based on the axis
-            slice_ = axis_slice(index, axis)
-
-            adjustments.loc[slice_] = _get_adjustments(row, decimals)
-
-    adjusted_obj = obj + adjustments
-    return adjusted_obj.round(decimals)
+    return adjusted_vals.round(decimals)
 
 
-def _get_adjustments(obj, decimals):
-    """Return a Series of adjustments to make."""
-    # Get the rounding factor and adjustment value
+def _get_adjustments(vals: pd.Series, decimals: int) -> pd.Series:
+    """Return a Series of adjustments to make.
+
+    Identifies how many adjustments needed from the rounding errors,
+    then identifies which values need to be adjusted, and finally
+    returns a Series with the adjustments.
+    """
+    # Get the rounding factor and adjustment value.
     rounding_factor = 10**decimals
     adjustment = 0.5 / rounding_factor
 
     # Errors > 0.5 between rounded and unrounded means that adjustment
-    # is needed
-    errs = obj.subtract(obj.round(decimals)).sum()
-    no_of_adjustments = int(errs.round(decimals) * rounding_factor)
+    # is needed.
+    errs = vals.subtract(vals.round(decimals))
+    tot_err = errs.sum()
 
-    # Create a zeros Series to fill with adjustments
-    adjustments = pd.Series(dtype=float).reindex_like(obj).fillna(0)
+    no_of_adjustments = int(tot_err.round(decimals) * rounding_factor)
 
-    to_adjust = _get_values_to_adjust(obj, decimals, no_of_adjustments)
+    # Create a zeros Series to fill with adjustments.
+    adjustments = pd.Series(dtype=float).reindex_like(vals).fillna(0)
+
+    # Fill only those we need to adjust with an adjustment.
+    to_adjust = _get_values_to_adjust(errs, decimals, no_of_adjustments)
     adjustments.loc[to_adjust] = adjustment * np.sign(no_of_adjustments)
 
     return adjustments
 
 
-def _get_values_to_adjust(values, decimals, no_of_adjustments):
-    """Get the difference of each value from its rounded value and pick
-    values to round by rank depending whether adjusting down or up.
-    """
+def _get_values_to_adjust(errs, decimals, no_of_adjustments):
+    """Return index keys where greatest rounding errors occur."""
+    # Rank order changes depending on the sign of no_of_adjustments.
     asc = (np.sign(no_of_adjustments) == -1)
 
-    diff_ranked = (
-        values
-        .subtract(values.round(decimals))
-        .sort_values(ascending=asc)
-    )
+    diff_ranked = errs.sort_values(ascending=asc)
 
+    # Select only as many as needed.
     return diff_ranked.index[range(0, abs(no_of_adjustments))]
