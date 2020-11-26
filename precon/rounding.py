@@ -8,7 +8,7 @@ from precon._validation import _handle_axis
 
 
 def round_and_adjust(
-        obj: Union[pd.DataFrame, pd.Series],
+        vals: Union[pd.DataFrame, pd.Series],
         decimals: int,
         axis: int = 0,
         ) -> pd.DataFrame:
@@ -22,8 +22,8 @@ def round_and_adjust(
 
     Parameters
     ----------
-    obj: DataFrame or Series
-        Object with values to adjust.
+    vals: DataFrame or Series
+        Values to adjust.
     decimals : int
         Number of decimal places to round each column to.
     axis : {0 or ‘index’, 1 or ‘columns’}, default 0
@@ -36,18 +36,18 @@ def round_and_adjust(
     """
     axis = _handle_axis(axis)
 
-    if isinstance(obj, pd.Series):
-        adjustments = _get_adjustments(obj, decimals)
+    if isinstance(vals, pd.Series):
+        adjustments = _get_adjustments(vals, decimals)
 
-    elif isinstance(obj, pd.DataFrame):
-        adjustments = obj.apply(_get_adjustments, decimals=decimals, axis=axis)
+    elif isinstance(vals, pd.DataFrame):
+        adjustments = vals.apply(_get_adjustments, axis, args=[decimals])
 
-    adjusted_obj = obj + adjustments
+    adjusted_vals = vals + adjustments
 
-    return adjusted_obj.round(decimals)
+    return adjusted_vals.round(decimals)
 
 
-def _get_adjustments(obj: pd.Series, decimals: int) -> pd.Series:
+def _get_adjustments(vals: pd.Series, decimals: int) -> pd.Series:
     """Return a Series of adjustments to make.
 
     Identifies how many adjustments needed from the rounding errors,
@@ -60,13 +60,13 @@ def _get_adjustments(obj: pd.Series, decimals: int) -> pd.Series:
 
     # Errors > 0.5 between rounded and unrounded means that adjustment
     # is needed.
-    errs = obj.subtract(obj.round(decimals))
+    errs = vals.subtract(vals.round(decimals))
     tot_err = errs.sum()
 
     no_of_adjustments = int(tot_err.round(decimals) * rounding_factor)
 
     # Create a zeros Series to fill with adjustments.
-    adjustments = pd.Series(dtype=float).reindex_like(obj).fillna(0)
+    adjustments = pd.Series(dtype=float).reindex_like(vals).fillna(0)
 
     # Fill only those we need to adjust with an adjustment.
     to_adjust = _get_values_to_adjust(errs, decimals, no_of_adjustments)
