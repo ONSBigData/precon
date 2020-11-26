@@ -77,7 +77,7 @@ def index_calculator(
         base_prices = get_base_prices(prices, base_period, axis, ffill=True)
         # Shift is necessary because the price in the following base
         # period uses the previous base period to calculate the index.
-        base_prices = base_prices.shift(1, axis=axis)
+        base_prices = base_prices.shift(1, axis=axis).fillna(base_prices)
 
     return calculate_index(
         prices,
