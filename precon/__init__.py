@@ -12,7 +12,7 @@ from precon.helpers import (
     reduce_cols,
     map_headings,
     axis_slice,
-    index_attrs_as_frame,
+    axis_vals_as_frame,
 )
 from precon.imputation import (
     impute_base_prices,
