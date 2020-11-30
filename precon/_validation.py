@@ -1,6 +1,6 @@
 """Internal functions for argument validation."""
-
-from typing import Union
+from collections.abc import Sequence
+from typing import Union, Any, List
 
 
 def _handle_axis(axis: Union[str, int]) -> int:
@@ -16,3 +16,7 @@ def _handle_axis(axis: Union[str, int]) -> int:
         axis = axis_mapper.get(axis)
 
     return axis
+
+def _list_convert(x: Any) -> Union[Any, List[Any]]:
+    """Converts argument to list if not already a sequence."""
+    return [x] if not isinstance(x, Sequence) else x
