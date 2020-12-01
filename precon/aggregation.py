@@ -6,7 +6,7 @@ import pandas as pd
 from pandas._typing import Axis, FrameOrSeriesUnion
 
 from precon.weights import get_weight_shares, reindex_weights_to_indices
-from precon.helpers import flip
+from precon.helpers import flip, axis_slice
 from precon._validation import _handle_axis
 
 
@@ -64,10 +64,16 @@ def aggregate(
     # axis before aggregating.
     weights = reindex_weights_to_indices(weights, indices, flip(axis))
 
-    # Ensure zero or NA indices have zero weight
-    weights = weights.mask(indices.isna() | indices.eq(0), 0)
+    # Ensure zero, NA and inf indices have zero weight so weight shares
+    # calculation reflects the indices being excluded.
+    zero_weights_mask = indices.isin([0, np.nan, np.inf])
+    masked_weights = weights.mask(zero_weights_mask, 0)
 
-    weight_shares = get_weight_shares(weights, axis)
+    # Except where all indices are zero, NA and inf.
+    slice_ = axis_slice(zero_weights_mask.all(axis), flip(axis))
+    masked_weights.loc[slice_] = np.nan
+
+    weight_shares = get_weight_shares(masked_weights, axis)
     return agg_method(indices, weight_shares, axis)
 
 
