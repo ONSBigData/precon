@@ -69,6 +69,10 @@ def aggregate(
     zero_weights_mask = indices.isin([0, np.nan, np.inf])
     masked_weights = weights.mask(zero_weights_mask, 0)
 
+    # Except where all indices are zero, NA and inf.
+    slice_ = axis_slice(zero_weights_mask.all(axis), flip(axis))
+    masked_weights.loc[slice_] = np.nan
+
     weight_shares = get_weight_shares(masked_weights, axis)
     return agg_method(indices, weight_shares, axis)
 
