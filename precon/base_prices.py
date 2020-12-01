@@ -202,12 +202,12 @@ def get_base_prices(
 
     if ffill_shift:
         # Fill base prices forward within the year and shift one.
-        return base_price_ffill_shift(base_prices, axis)
+        return base_price_fill_shift(base_prices, axis)
     
     return base_prices
 
 
-def base_price_ffill_shift(
+def base_price_fill_shift(
     base_prices: pd.DataFrame,
     axis: int = 0
 ) -> pd.DataFrame:

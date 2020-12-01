@@ -10,7 +10,7 @@ from precon.base_prices import (
     impute_base_prices,
     get_base_prices,
     get_quality_adjusted_prices,
-    base_price_ffill_shift,
+    base_price_fill_shift,
     
 )
 from precon.chaining import chain, unchain
