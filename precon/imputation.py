@@ -200,7 +200,7 @@ def get_base_prices(
     
     # Only prices in the base periods are not NaN.
     months = axis_vals_as_frame(prices, axis, converter=lambda x: x.month)
-    base_prices = prices.where(months.eq(base_period))
+    base_prices = prices.where(months.isin(base_period))
 
     if ffill:
         # Fill base prices forward within the year
