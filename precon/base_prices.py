@@ -84,7 +84,7 @@ def impute_base_prices(
         weights = weights.mask(to_impute, 0)
 
     # Get the base prices to start with from given base period.
-    start_prices = get_base_prices(prices, base_period, axis=axis, ffill=False)
+    start_prices = get_base_prices(prices, base_period, axis=axis, ffill_shift=False)
     base_prices = start_prices.copy()
 
     if not shift_imputed_values:
@@ -156,8 +156,7 @@ def get_base_prices(
         prices: pd.DataFrame,
         base_period: Union[int, Sequence[int]] = 1,
         axis: pd._typing.Axis = 0,
-        ffill: bool = True,
-        shift: bool = True,
+        ffill_shift: bool = True,
         ) -> pd.DataFrame:
     """Return prices at base month with optional ffill and shift.
 
@@ -173,10 +172,9 @@ def get_base_prices(
         The base periods to select base prices from.
     axis : {0, 1} int, defaults to 0
         Fill and shift direction.
-    ffill : bool, defaults to True
-        Switch to forward fill values within the year.
-    shift : bool, defaults to True
-        Switch to shift values by one period.
+    ffill_shift : bool, defaults to True
+        Switch to forward fill values within the year and shift by one
+        period.
 
     Returns
     -------
@@ -200,21 +198,50 @@ def get_base_prices(
     
     # Only prices in the base periods are not NaN.
     months = axis_vals_as_frame(prices, axis, converter=lambda x: x.month)
-    base_prices = prices.where(months.eq(base_period))
+    base_prices = prices.where(months.isin(base_period))
 
-    if ffill:
-        # Fill base prices forward within the year
-        base_prices = (
-            base_prices
-            .groupby(lambda x: x.year, axis=axis)
-            .fillna(method='ffill')
-        )
-        
-    if shift:
-        # Fill NAs in first period with unshifted base prices.
-        base_prices = base_prices.shift(1, axis=axis).fillna(base_prices)
+    if ffill_shift:
+        # Fill base prices forward within the year and shift one.
+        return base_price_ffill_shift(base_prices, axis)
     
     return base_prices
+
+
+def base_price_ffill_shift(
+    base_prices: pd.DataFrame,
+    axis: int = 0
+) -> pd.DataFrame:
+    """Fill forward base prices and shift one period.
+
+    Parameters
+    ----------
+    base_prices : DataFrame
+    axis : {0, 1} int, defaults to 0
+        Fill and shift direction.
+
+    Returns
+    -------
+    DataFrame
+        The filled and shifted base prices.
+
+    Notes
+    -----
+    The base prices are forward filled within each year so that base
+    prices are not filled when prices have stopped being collected.
+    The base prices are shifted by one period on to the Feb-Jan+1
+    time delta in which they apply. A base price is needed for the Jan
+    period at the start of the series, so the function fills the
+    shifted values with the unshifted values to achieve this.
+
+    TODO: Make this work for any base period.
+
+    """
+    return (
+        base_prices.groupby(lambda x: x.year, axis=axis)
+        .fillna(method='ffill')
+        .shift(1, axis=axis)
+        .fillna(base_prices)
+    )
 
 
 def get_quality_adjusted_prices(
