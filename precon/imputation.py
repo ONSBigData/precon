@@ -4,14 +4,18 @@ A set of functions for imputation methods.
 # TODO: Modify the functions to work with a user defined period.
     * Look at using pd.Grouper with freq argument
 """
-from typing import Optional
+from typing import Optional, Sequence, Union
 
 import numpy as np
 import pandas as pd
 
-from precon._validation import _handle_axis
+from precon._validation import _handle_axis, _list_convert
 from precon.index_methods import calculate_index
-from precon.helpers import flip, axis_slice, subset_shared_axis
+from precon.helpers import (
+    flip, 
+    axis_vals_as_frame,
+    subset_shared_axis,
+)
 from precon.weights import reindex_weights_to_indices
 
 
@@ -150,28 +154,67 @@ def impute_base_prices(
 
 def get_base_prices(
         prices: pd.DataFrame,
-        base_period: int = 1,
+        base_period: Union[int, Sequence[int]] = 1,
         axis: pd._typing.Axis = 0,
         ffill: bool = True,
+        shift: bool = True,
         ) -> pd.DataFrame:
-    """Returns the prices at the base month in the same shape as prices.
+    """Return prices at base month with optional ffill and shift.
 
-    Default behaviour is to fill forward values, but can be changed to
-    return NaN where not base_month by setting ffill=False.
+    Default behaviour is to fill forward values within the year and
+    shift one period, since base prices usually start being used in
+    the following period up to the next base period. Will return
+    NaNs in non-base month if ffill=False.
+
+    Parameters
+    ----------
+    prices : DataFrame
+    base_period : int, or list of ints
+        The base periods to select base prices from.
+    axis : {0, 1} int, defaults to 0
+        Fill and shift direction.
+    ffill : bool, defaults to True
+        Switch to forward fill values within the year.
+    shift : bool, defaults to True
+        Switch to shift values by one period.
+
+    Returns
+    -------
+    DataFrame
+        The base prices.
+
+    Notes
+    -----
+    The base prices are forward filled within each year so that base
+    prices are not filled when prices have stopped being collected.
+    When shifting, base prices are shifted by one period. So for a base
+    period of Jan (int=1) base prices are shifted on to the Feb-Jan+1
+    time delta in which they apply. A base price is needed for the Jan
+    period at the start of the series, so the function fills the
+    shifted values with the unshifted values to achieve this
+    
+    TODO: Make this work for any base period.
+    
     """
-    # TODO: Change this to work with user defined freq
-    bases = prices.axes[axis].month == base_period
-
-    # Fill all except base months with NA
-    base_prices = prices.copy()
-
-    slice_ = axis_slice(~bases, axis)
-    base_prices.iloc[slice_] = np.nan
+    base_period = _list_convert(base_period)
+    
+    # Only prices in the base periods are not NaN.
+    months = axis_vals_as_frame(prices, axis, converter=lambda x: x.month)
+    base_prices = prices.where(months.eq(base_period))
 
     if ffill:
-        return base_prices.ffill(axis)
-    else:
-        return base_prices
+        # Fill base prices forward within the year
+        base_prices = (
+            base_prices
+            .groupby(lambda x: x.year, axis=axis)
+            .fillna(method='ffill')
+        )
+        
+    if shift:
+        # Fill NAs in first period with unshifted base prices.
+        base_prices = base_prices.shift(1, axis=axis).fillna(base_prices)
+    
+    return base_prices
 
 
 def get_quality_adjusted_prices(

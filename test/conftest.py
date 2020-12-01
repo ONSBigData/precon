@@ -4,6 +4,12 @@ import numpy as np
 import pandas as pd
 from pandas import Timestamp
 
+
+def create_dataframe(tuple_data):
+    """Create pandas df from tuple data with a header."""
+    return pd.DataFrame.from_records(tuple_data[1:], columns=tuple_data[0])
+
+
 ### REUSABLE FIXTURES --------------------------------------------------------
 
 @pytest.fixture()

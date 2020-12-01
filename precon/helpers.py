@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
-from typing import Sequence, Union, Optional
+from typing import Optional, Callable, Union, Sequence
 
+import numpy as np
 import pandas as pd
 from pandas._typing import Level
+
 
 def reindex_and_fill(df, other, first='ffill', axis=0):
     """Reindex and fill the DataFrame or Series by given index and axis.
@@ -127,30 +129,54 @@ def _get_end_year(start_year):
     return str(int(start_year) - 1)
 
 
-def index_attrs_as_frame(df, attr=None, axis=0):
-    """
-    Returns a DataFrame of index attributes (or values if not
-    specified), the same shape as the given DataFrame.
+def axis_vals_as_frame(
+    df: pd.DataFrame,
+    axis: int = 0,
+    levels: Optional[Level] = None,
+    converter: Callable[[pd.Index], Union[pd.Index, np.ndarray]] = None,
+) -> pd.DataFrame:
+    """Broadcast axis values across the DataFrame.
 
-    # TODO: Get this working for case where axis = 0 and attr = None
-    """
-    if attr:
-        vals = getattr(df.axes[axis], attr).values
-    else:
-        vals = df.axes[axis].values
+    Pick the axis and optional MultIndex level. Optionally
+    transform the index object before broadcasting.
 
-    # Create an axis slice so attrs can be cast to any axis
+    Parameters
+    ----------
+    df: DataFrame
+    axis: {0, 1}, int default 0
+        The axis values to broadcast: {0:'index', 1:'columns'}.
+    levels: int or str
+        Either the integer position or the name of the level.
+    converter: callable
+        A function to transform an index object.
+
+    Returns
+    -------
+    DataFrame
+        The broadcast axis values with optional transformation.
+    """
+    vals = {0: df.index, 1: df.columns}.get(axis)
+
+    if levels:
+        vals = vals.get_level_values(levels)
+
+    if converter:
+        vals = converter(vals)
+
+    # Prepare the values to pass to np.tile which reshapes to the df.
+    if not isinstance(vals, np.ndarray):
+        vals = vals.values
+    reps = (df.shape[axis ^ 1], 1)
+
     if axis == 0:
-        slice_ = axis_slice(None, flip(axis))
-        vals = vals[slice_]
+        # Reshape vals to a column and reverse reps if axis is 0.
+        vals = vals[:, None]
+        reps = reps[::-1]
 
-    # Create an empty DataFrame in original shape for casting
-    all_attrs = pd.DataFrame().reindex_like(df)
+    df_out = df.copy()
+    df_out.loc[:, :] = np.tile(vals, reps)
 
-    all_attrs.loc[:, :] = vals
-
-    # Return with the original attribute dtype
-    return all_attrs.astype(vals.dtype)
+    return df_out
 
 
 def reduce_to_only_differing_periods(df, axis):
