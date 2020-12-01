@@ -14,7 +14,7 @@ def get_weight_shares(
     axis = _handle_axis(axis)
     # TODO: test precision
     if not weights.sum(axis).round(5).eq(1).all():
-        return weights.div(weights.sum(axis), axis=flip(axis))
+        return weights.div(weights.sum(axis, min_count=1), axis=flip(axis))
 
     else:   # It is already weight shares so return input
         return weights
