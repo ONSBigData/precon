@@ -5,7 +5,7 @@ import pandas as pd
 from pandas._typing import Axis
 
 from precon._validation import _handle_axis
-from precon.imputation import impute_base_prices, get_base_prices
+from precon.base_prices import impute_base_prices, get_base_prices
 from precon.index_methods import calculate_index
 from precon.helpers import flip
 
