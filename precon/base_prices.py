@@ -160,7 +160,7 @@ def impute_base_prices(
 
 def get_base_prices(
     prices: pd.DataFrame,
-    base_period: Optional[Union[int, Sequence[int]]] = 1,
+    base_period: Union[int, Sequence[int]] = 1,
     axis: pd._typing.Axis = 0,
     fill_shift: bool = True,
 ) -> pd.DataFrame:
@@ -170,11 +170,11 @@ def get_base_prices(
     ----------
     prices : DataFrame
     base_period : int, or list of ints, defaults to 1
-        The base periods to select base prices from.
+        Base period/s to select base prices from.
     axis : {0, 1} int, defaults to 0
         Fill and shift direction.
-    fill_shift: bool, defaults to True
-        Swithc to forward fill base prices within year and shift one
+    fill_shift : bool, defaults to True
+        Switch to forward fill base prices within year and shift one
         period.
 
     Returns
