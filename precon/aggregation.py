@@ -131,8 +131,8 @@ def aggregate_level(
     Example of how to aggregate from price quotes to item level indices using published price quotes data. ONS makes price quote
     data available at `Consumer price inflation item indices and price quotes <https://www.ons.gov.uk/economy/inflationandpriceindices/datasets/consumerpriceindicescpiandretailpricesindexrpiitemindicesandpricequotes>`_
     
-    Dummy data below is an example using dummy data. Replace dummy data with price quotes data taken from link provided above. 
-    Files are available as csv labelled as Price quotes <month> <year>, e.g Price quotes January 2020
+    Dummy data below is an example using randomly generated data. Replace dummy data with price quotes data taken from link provided above. 
+    Files are available as csv's labelled as Price quotes <month> <year>, e.g Price quotes January 2021
 
     >>> dummy_data = pd.DataFrame ({
             "price": [0.8, 6.19, 79.0, 0.10, 10.0, 1715.0, 0.78, 29.0, 1.9, 2.09],
