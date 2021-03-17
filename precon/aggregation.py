@@ -124,6 +124,46 @@ def aggregate_level(
     -------
     DataFrame:
         The aggregated index.
+
+    Examples
+    --------
+
+    Example of how to aggregate from price quotes to item level indices using published price quotes data. ONS makes price quote
+    data available at `Consumer price inflation item indices and price quotes <https://www.ons.gov.uk/economy/inflationandpriceindices/datasets/consumerpriceindicescpiandretailpricesindexrpiitemindicesandpricequotes>`_
+    
+    Dummy data below is an example using dummy data. Replace dummy data with price quotes data taken from link provided above. 
+    Files are available as csv labelled as Price quotes <month> <year>, e.g Price quotes January 2020
+
+    >>> dummy_data = pd.DataFrame ({
+            "price": [0.8, 6.19, 79.0, 0.10, 10.0, 1715.0, 0.78, 29.0, 1.9, 2.09],
+            "shop_weight": [1, 3, 3, 3, 1, 1, 1, 1, 1, 1],
+            "stratum_weight": [76.49, 37.7, 9.41, 14.71, 2.56, 10.31, 72.65, 4.56, 38.18, 72.65],
+            "item_id": [520106, 520106, 520106, 630313, 630313, 630313, 630313, 440129, 440129, 440129],
+            "stratum_cell": [1, 2, 3, 1, 2, 3, 4, 1, 2, 3],
+            "quote_date": [202001, 202001, 202001, 202001, 202001, 202001, 202001, 202001, 202001, 202001]
+        })
+
+    >>> hierarchy = ['item_id', 'stratum_cell']
+
+    Data needs to be in the form of a `MultiIndex <https://pandas.pydata.org/pandas-docs/stable/user_guide/advanced.html>`_.
+
+    >>> price_quotes = dummy_data.pivot_table(
+            index=hierarchy,
+            columns=['quote_date'],
+            values=['price', 'shop_weight', 'stratum_weight']
+        )
+
+    Extract the required variables
+
+    >>> prices = price_quotes.xs('price', axis=1)
+    >>> shop_weights = price_quotes.xs('shop_weight', axis=1)
+    >>> stratum_weights = price_quotes.xs('stratum_weight', axis=1)
+
+    
+    >>> stratum_indices = precon.aggregate_level(prices, shop_weights, aggregate_on=hierarchy, axis=0)
+
+    >>> item_indices = precon.aggregate_level(stratum_indices, stratum_weights, aggregate_on='item_id', axis=0)
+
     """  
     return indices.groupby(aggregate_on, axis).apply(
         aggregate, weights, method, axis,
