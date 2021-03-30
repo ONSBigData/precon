@@ -1,0 +1,12 @@
+[flake8]
+#ignore = D203
+; exclude =
+    ; # No need to traverse our git directory
+    ; .git,
+    ; # There's no value in checking cache directories
+    ; __pycache__,
+#max-complexity = 10
+per-file-ignores =
+    # E501 is line too long
+    # E303 is too many blank lines
+    tests/*: E501
