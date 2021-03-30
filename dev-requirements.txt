@@ -1,6 +1,8 @@
 bump2version
 coverage==5.3
 flake8
+pre-commit
+pydocstyle
 pytest
 sphinx
 twine
